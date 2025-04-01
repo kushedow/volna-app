@@ -1,34 +1,52 @@
 
     <!-- Welcome Section -->
     <h1 class="text-[#1B3B36] text-2xl font-semibold mb-8">
-      Доброе утро, Анна! 👋
+      Доброе утро, {{customer.first_name}}! 👋
     </h1>
 
     <!-- Quick Status Cards -->
     <div class="grid md:grid-cols-3 gap-4 mb-8">
       <div class="bg-[#E9F1F0] p-6 rounded-xl">
-        <div class="flex
-justify-between mb-2">
-          <h3 class="font-medium">Документы</h3>
-          <span>👩‍⚕️</span>
+        <div class="flex justify-between">
+          <div>
+                <h3 class="font-medium">Документы</h3>
+                <p class="text-gray-600">0 из 12 собрано</p>
+                <a href="#customer__docs" class="text-[#7FD1C5]">Перейти ↓</a>
+          </div>
+          <span class="text-4xl">👩‍⚕️</span>
         </div>
-        <p class="text-gray-600 mb-2">0 из 12 собрано</p>
-        <a href="#" class="text-[#7FD1C5]">Перейти →</a>
+
       </div>
       <div class="bg-[#E9F1F0] p-6 rounded-xl">
-        <div class="flex justify-between mb-2">
-          <h3 class="font-medium">Экзамен</h3>
-          <span>✍️</span>
+        <div class="flex justify-between">
+            <div>
+                 <h3 class="font-medium">Экзамен</h3>
+                 <p class="text-gray-600">не назначен</p>
+                 <a href="#customer__exams" class="text-[#7FD1C5]">Перейти ↓</a>
+            </div>
+            <span class="text-4xl">✍️</span>
         </div>
-        <p class="text-gray-600 mb-2">не назначен</p>
-        <a href="#" class="text-[#7FD1C5]">Перейти →</a>
+
       </div>
       <div class="bg-[#E9F1F0] p-6 rounded-xl">
-        <div class="flex justify-between mb-2">
-          <h3 class="font-medium">База FAQ</h3>
-          <span>🤖</span>
+        <div class="flex justify-between">
+          <div>
+              <h3 class="font-medium">База FAQ</h3>
+              <p class="text-gray-600">Все вопросы</p>
+              <a href="#customer__access" class="text-[#7FD1C5]">Перейти ↓</a>
+          </div>
+          <span class="text-4xl">🤖</span>
         </div>
-        <p class="text-gray-600 mb-2">Все вопросы</p>
-        <a href="#" class="text-[#7FD1C5]">Перейти →</a>
+
       </div>
     </div>
+
+
+    {% if customer.notification_text %}
+    <!-- Promo Banner -->
+    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
+      <p>
+        {{customer.notification_text}}
+      </p>
+    </div>
+    {% endif %}
