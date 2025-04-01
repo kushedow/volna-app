@@ -13,7 +13,7 @@ class GDriveFetcher(object):
 
     def __init__(self):
 
-        self.client = httpx.AsyncClient()
+        self.client = httpx.AsyncClient(timeout=15.0)
 
         # Кешируем данные
 
