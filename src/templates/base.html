@@ -20,16 +20,16 @@
 </head>
 <body class="bg-[#F2F6F8] h-full">
 
-<div class="max-w-[850px] mx-auto p-6 font-['Montserrat']">
+<div class="max-w-[850px] mx-auto md:p-6 font-['Montserrat']">
   <!-- Header -->
-  <header class="flex justify-between items-center mb-8">
+  <header class="flex justify-between items-center md:mb-8 p-4 md:p-0">
     <img src="/static/img/volna_logo.svg" alt="Volna" class="h-8" />
     <button class="bg-[#1B3B36] text-white px-6 py-2 rounded-lg">
-      Мне нужна помощь!
+      Нужна помощь!
     </button>
   </header>
 
-  <main class="bg-white p-6 rounded-xl shadow-sm">
+  <main class="bg-white p-3 md:p-6 rounded-xl shadow-sm">
   {% block content %}
   {% endblock %}
   </main>

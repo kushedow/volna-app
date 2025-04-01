@@ -12,7 +12,7 @@
 
           {% if doc.is_uploaded %}
 
-              <div class="bg-[#6bdd771a] p-6 rounded-xl shadow-sm  ">
+              <div class="bg-[#6bdd771a] p-4 md:p-6 rounded-xl shadow-sm  ">
                 <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
                 <p class="text-gray-600 text-sm mb-4">
                   {{ doc.description }}
@@ -21,7 +21,7 @@
                   <span class="pr-4 py-2">
                       ✅ Загружен
                   </span>
-                  <a href="/document/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
                     Посмотреть
                   </a>
                 </div>
@@ -29,16 +29,16 @@
 
           {% else %}
 
-              <div class="bg-white p-6 rounded-xl shadow-sm">
+              <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm">
                 <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
                 <p class="text-gray-600 text-sm mb-4">
                   {{ doc.description }}
                 </p>
                 <div class=" ">
-                  <a href="/document/{{ doc.id }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
                     Загрузить
                   </a>
-                  <a href="/document/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
                     Как получить
                   </a>
                 </div>

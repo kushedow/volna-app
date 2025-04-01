@@ -37,8 +37,8 @@ class GDriveFetcher(object):
 
     async def get_customer(self, amo_id) -> Customer:
 
-        if self.customers.get(amo_id) is not None:
-            return self.customers.get(amo_id)
+        # if self.customers.get(amo_id) is not None:
+        #     return self.customers.get(amo_id)
 
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
 
@@ -69,4 +69,11 @@ class GDriveFetcher(object):
         data = response.json()
         documents = {doc_data["id"]: Document(**doc_data) for doc_data in data}
         return documents
+
+    async def get_document(self, doc_id):
+        pprint(self.documents)
+        if self.documents.get(doc_id) is not None:
+            return self.documents.get(doc_id)
+
+
 
