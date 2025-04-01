@@ -71,7 +71,6 @@ class GDriveFetcher(object):
         return documents
 
     async def get_document(self, doc_id):
-        pprint(self.documents)
         if self.documents.get(doc_id) is not None:
             return self.documents.get(doc_id)
 

@@ -3,3 +3,7 @@ GDRIVE_URL = "https://script.google.com/macros/s/AKfycbwJpmxd3x3mysp53z5AYxf0xwq
 CUSTOMERS_URL = GDRIVE_URL + "/customers"
 SPECIALITIES_URL = GDRIVE_URL + "/specialities"
 DOCUMENTS_URL = GDRIVE_URL + "/documents"
+UPLOAD_URL = GDRIVE_URL + "/upload"
+
+ALLOWED_EXTENSIONS = ["pdf"]
+UPLOAD_FOLDER = "uploads"

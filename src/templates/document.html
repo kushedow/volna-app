@@ -5,33 +5,49 @@
 
 {% block content %}
 
-    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-8">
+    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-4">
       {{document.title}}
     </h1>
 
-    <h3 class="text-lg">
+    {% if document.is_uploaded %}
+    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
+      <p>Файл загружен. Вы можете вернуться и загрузить остальные }}</p>
+    </div>
+    {% endif %}
+
+    <h3 class="text-lg font-normal">
       {{document.description}}
     </h3>
 
-    <div>
+    <form action="/upload" method="post" enctype="multipart/form-data" class="">
 
-        <div class="mt-8 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-              <div class="text-center">
-                <svg class="mx-auto size-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z" clip-rule="evenodd"></path>
-</svg>
-                <div class="mt-4 flex text-sm/6 text-gray-600">
-                  <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-emerald-600 focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-emerald-500">
-                    <span>Выберите файл</span>
-                    <input id="file-upload" name="file-upload" type="file" class="sr-only">
-                  </label>
-                  <p class="pl-1">Или перетащите его сюда</p>
-                </div>
-                <p class="text-xs/5 text-gray-600">PNG, JPG, GIF размером до 10MB</p>
-              </div>
-            </div>
+      <input type="hidden" id="amo_id" name="amo_id" value="{{ amo_id }}">
+      <input type="hidden" id="doc_id" name="doc_id" value="{{ document.id }}">
 
-    </div>
+        <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl mt-6">
+
+            <input id="example1"
+                   name="file"
+                   type="file"
+                   class="mb-2 block w-full text-sm file:mr-4
+                   file:rounded-md
+                   file:border-0
+                   file:bg-teal-500
+                   file:py-2 file:px-4
+                   file:text-sm
+                   file:font-semibold
+                   file:text-white
+                   hover:file:bg-teal-700
+                   focus:outline-none
+                   disabled:pointer-events-none
+                   disabled:opacity-60" />
+
+
+        <button class="bg-[#214B57] hover:bg-[#346471] text-sm text-white py-2 px-4 rounded cursor-pointer" type="submit"> Загрузить</button>
+
+      </div>
+
+    </form>
 
     <div>
       {{document.guide | safe }}
