@@ -1,3 +1,4 @@
+import logging
 from copy import copy
 from pprint import pprint
 from typing import Dict, Any
@@ -35,14 +36,20 @@ class GDriveFetcher(object):
         customers = {cust.amo_id : Customer(**cust) for cust in data}
         return customers
 
-    async def get_customer(self, amo_id) -> Customer:
+    async def get_customer(self, amo_id) -> Customer | None:
 
         # if self.customers.get(amo_id) is not None:
         #     return self.customers.get(amo_id)
 
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
-
         data = response.json()
+
+        logging.warn(data)
+
+        if data.get("error"):
+            logging.debug(data)
+            return None
+
         customer: Customer = Customer(**data)
 
         for doc_id in customer.docs_required:
