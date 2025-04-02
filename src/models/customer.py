@@ -22,6 +22,8 @@ class Customer(BaseModel):
     exam_status: str
     folder_id: str
 
+    is_activated: bool = Field(default=False, description="Активировался ли уже пользователь")
+
     @property
     def docs_is_ready(self) -> bool:
         """Returns True if docs_required == docs_ready."""

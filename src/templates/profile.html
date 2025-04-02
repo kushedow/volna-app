@@ -5,12 +5,15 @@
 
 {% block content %}
 
-  {% include 'sections/status.html' %}
+    {% if not customer.is_activated %}
+      {% include 'sections/welcome.html' %}
 
-  {% include 'sections/documents.html' %}
+    {% else %}
+      {% include 'sections/status.html' %}
+      {% include 'sections/documents.html' %}
+      {% include 'sections/exams.html' %}
+      {% include 'sections/accounts.html' %}
 
-  {% include 'sections/exams.html' %}
-
-  {% include 'sections/accounts.html' %}
+    {% endif %}
 
 {% endblock %}
