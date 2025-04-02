@@ -52,7 +52,7 @@ class GDriveFetcher(object):
 
         customer: Customer = Customer(**data)
 
-        for doc_id in customer.docs_required:
+        for doc_id in (customer.docs_required + customer.docs_extra):
 
             if(doc_id not in self.documents):
                 raise ValueError(f"Required for customer {amo_id} document: {doc_id} was not found")

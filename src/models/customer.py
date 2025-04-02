@@ -37,5 +37,5 @@ class Customer(BaseModel):
     @property
     def docs_total_count(self) -> int:
         """Returns the total number of required documents."""
-        return len(self.docs_required)
+        return len(self.docs_required+self.docs_extra)
 
