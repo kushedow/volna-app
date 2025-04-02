@@ -1,21 +1,15 @@
-import base64
 import logging
-import os
 from contextlib import asynccontextmanager
-from pprint import pprint
 
-import aiofiles
-import httpx
 import uvicorn
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from httpx import ConnectError
 from starlette.requests import Request
 from fastapi.templating import Jinja2Templates
-from starlette.responses import JSONResponse, HTMLResponse
 from starlette.staticfiles import StaticFiles
 
-from config import ALLOWED_EXTENSIONS, UPLOAD_FOLDER, UPLOAD_URL
 from src.classes.gdrive_fetcher import GDriveFetcher
+from src.classes.gdrive_pusher import GDrivePusher
 from src.models.customer import Customer
 from src.models.document import Document
 
@@ -44,7 +38,7 @@ app.mount("/uploads", app)
 
 templates = Jinja2Templates(directory="src/templates")
 gd_fetcher = GDriveFetcher()
-
+gd_pusher = GDrivePusher()
 
 @app.get("/profile/{amo_id}")
 async def profile(request: Request, amo_id: int):
@@ -74,26 +68,13 @@ async def say_hello(request: Request, amo_id: int, doc_id: int):
 async def upload_document(request: Request, file: UploadFile = File(...)):
     try:
         form_data = await request.form()
-        amo_id = int(form_data.get("amo_id"))
-        doc_id = int(form_data.get("doc_id"))
+        amo_id, doc_id = int(form_data.get("amo_id")), int(form_data.get("doc_id"))
 
-        filename = file.filename
-        if not filename.lower().split(".")[-1] in ALLOWED_EXTENSIONS:
-            raise HTTPException(status_code=400, detail="Invalid file type: Only PDF files are allowed")
+        logging.debug(f"Загружаем  {file.filename} => файл {doc_id} от пользователя {amo_id}")
 
-        contents = await file.read()
-
-        file = base64.b64encode(contents).decode('utf-8')
-        data = {"amo_id": amo_id, "doc_id": doc_id, "file": file}
-
-        client = httpx.AsyncClient(timeout=15.0, follow_redirects=True)
-        response = await client.post(UPLOAD_URL, data=data)
-        pprint(response.json())
-
-        document: Document = await gd_fetcher.get_document(doc_id)
-        document.is_uploaded = True
-
+        document = await gd_pusher.upload_file(file, amo_id, doc_id)
         context = {"request": request, "document": document, "amo_id": amo_id}
+
         return templates.TemplateResponse("document.html", context)
 
     except ValueError:
