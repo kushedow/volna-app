@@ -1,4 +1,7 @@
 {# templates/index.html #}
+
+
+
 {% extends "base.html" %}
 
 {% block title %}Volna - Личный кабинет{% endblock %}
@@ -30,10 +33,10 @@
 
         <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl mt-6">
 
-            <input id="example1"
+            <input id="upload__filecontrol"
                    name="file"
                    type="file"
-                   class="mb-2 block w-full text-sm file:mr-4
+                   class="mb-4 block w-full text-sm file:mr-4
                    file:rounded-md
                    file:border-0
                    file:bg-teal-500
@@ -49,7 +52,16 @@
                    required
             />
 
-        <button class="bg-[#214B57] hover:bg-[#346471] text-sm text-white py-2 px-4 rounded cursor-pointer" type="submit"> Загрузить</button>
+        <button id="upload__button" class="bg-[#214B57] hover:bg-[#346471] text-sm text-white py-3 px-4 rounded cursor-pointer flex items-center" type="submit">
+
+              <svg id="upload__animation" class="hidden animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+
+            <span id="upload__buttontext">Загрузить</span>
+
+        </button>
 
       </div>
 
@@ -58,5 +70,21 @@
     <div>
       {{document.guide | safe }}
     </div>
+
+<script>
+
+const uploadButton = document.getElementById('upload__button');
+
+uploadButton.addEventListener('click', function(event) {
+
+    const fileControl = document.querySelector("#upload__filecontrol")
+    if (fileControl.files.length !== 1) { return }
+
+    document.querySelector("#upload__animation").classList.remove("hidden")
+    document.querySelector("#upload__buttontext").innerHTML = "Идет загрузка ... "
+
+});
+
+</script>
 
 {% endblock %}

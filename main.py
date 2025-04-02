@@ -28,7 +28,6 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logging.info("Application shutting down...")
-    # Shutdown code here (e.g., close database connection)
 
 
 app = FastAPI(lifespan=lifespan)
@@ -40,10 +39,11 @@ templates = Jinja2Templates(directory="src/templates")
 gd_fetcher = GDriveFetcher()
 gd_pusher = GDrivePusher()
 
+
 @app.get("/profile/{amo_id}")
 async def profile(request: Request, amo_id: int):
     customer: Customer = await gd_fetcher.get_customer(amo_id)
-    context = {"request": request, "customer": customer}
+    context = {"request": request, "customer": customer, "amo_id": amo_id}
 
     if customer is None:
         return templates.TemplateResponse("errors/404.html", context, status_code=404)
@@ -80,7 +80,7 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
     except ValueError:
         raise HTTPException(status_code=400, detail="amo_id and doc_id must be integers")
     except HTTPException as e:
-        raise e  # Re-raise HTTPExceptions to maintain status codes
+        raise e  # Re-raise HTTPExceptions
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
