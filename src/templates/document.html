@@ -1,6 +1,3 @@
-{# templates/index.html #}
-
-
 {% extends "base.html" %}
 
 {% block title %}Volna - Личный кабинет{% endblock %}
@@ -16,9 +13,13 @@
     </h1>
 
     {% if document.is_uploaded %}
+
     <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
-      <p>Файл загружен. Вы можете вернуться и загрузить остальные }}</p>
+      <p>Файл загружен. Вы можете вернуться и загрузить остальные. Или загрузить еще, если хотите!</p>
     </div>
+
+    <figure class="md:w-xs"> <img src="/{{ document.picture_url }}" alt="" class="w-full"></figure>
+
     {% endif %}
 
     <h3 class="text-lg font-normal">

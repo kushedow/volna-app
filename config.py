@@ -4,6 +4,9 @@ CUSTOMERS_URL = GDRIVE_URL + "/customers"
 SPECIALITIES_URL = GDRIVE_URL + "/specialities"
 DOCUMENTS_URL = GDRIVE_URL + "/documents"
 UPLOAD_URL = GDRIVE_URL + "/upload"
+FAQ_URL = GDRIVE_URL + "/faq"
+GROUPS_URL = GDRIVE_URL + "/groups"
+EVENTS_URL = GDRIVE_URL + "/events"
 
 ALLOWED_EXTENSIONS = ["pdf"]
 UPLOAD_FOLDER = "uploads"

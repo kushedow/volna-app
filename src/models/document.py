@@ -12,10 +12,4 @@ class Document(BaseModel):
     doc_id: int = Field(default=None, description="duplicates id for idk what reason xD")  #
     gdrive_id: str = Field(default=None, description="GDrive Uploaded File Unique identifier")
 
-    # @property
-    # def is_uploaded(self):
-    #     return self.gdrive_id is not None
-    #
-    # @is_uploaded.setter
-    # def is_uploaded(self, value):
-    #     pass
+    picture_url: str = Field(default=None, description="Picture URL of the document")
