@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 import httpx
 
-from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL
+from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL
 from src.models.customer import Customer
 from src.models.document import Document
 from src.models.faq import FAQ
@@ -34,8 +34,9 @@ class GDriveFetcher(object):
         self.documents = await self.get_all_documents()
         print("caching faq")
         self.faq = await self.get_all_faqs()
-        print("caching groups")
+        print("caching groups and its events")
         self.groups = await self.get_all_groups()
+
 
 
     async def get_all_customers(self) -> dict[Any, Customer]:
@@ -97,10 +98,10 @@ class GDriveFetcher(object):
     async def get_all_groups(self):
 
         response = await self.client.get(GROUPS_URL, follow_redirects=True)
-        data = response.json()
+        all_groups = response.json()
 
         groups = {}
-        for gr in data:
+        for gr in all_groups:
 
             group_id = gr["id"]
             chat_tg = gr["chat_tg"]
@@ -132,6 +133,20 @@ class GDriveFetcher(object):
 
             groups[group_id] = (Group(id=group_id, chat_tg=chat_tg, curator=curator, teacher=teacher, expert=expert))
 
+        # Досыпаем к каждой группе ее события
+
+        response = await self.client.get(EVENTS_URL, follow_redirects=True)
+        all_events = response.json()
+
+        for event in all_events:
+            group_id = event["group_id"]
+
+            if groups[group_id]:
+                groups[group_id].events.append(event)
+            else:
+                logging.warn(f"Не надена группа {group_id}")
+
+        logging.warn(groups)
         return groups
 
     async def get_document(self, doc_id):

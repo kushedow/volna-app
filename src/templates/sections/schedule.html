@@ -37,29 +37,34 @@
     }
 </style>
 
-<div class="tab-container">
+{#<div class="tab-container">#}
+{##}
+{#  <input type="radio" id="tab1" name="tabs" checked>#}
+{#  <label class="tab-label cursor-pointer p-4 border  border-emerald-500" for="tab1">Ближайшее</label>#}
+{##}
+{#  <input type="radio" id="tab2" name="tabs">#}
+{#  <label class="tab-label cursor-pointer p-4 border border-emerald-500" for="tab2">Всё расписание</label>#}
+{##}
+{#   <div id="content1" class="tab-content">#}
+{#     <p>☝️ Нажмите “все”, чтобы увидеть прошедшие события с записями и полное будущее расписание </p>ё#}
+{#   </div>#}
+{##}
+{#   <div id="content2" class="tab-content">#}
+{#       Здесь показывается вообще все#}
+{#   </div>#}
+{##}
+{#</div>#}
 
-  <input type="radio" id="tab1" name="tabs" checked>
-  <label class="tab-label cursor-pointer p-4 border  border-emerald-500" for="tab1">Ближайшее</label>
+   {% for event in customer.group.events %}
+      <div class="mb-4">
+        {{ event.title }}
+{#        {{ event.starts }}#}
+{#        {{ event.ends }}#}
+        {{ event.link }}
+      </div>
+   {% endfor %}
 
-  <input type="radio" id="tab2" name="tabs">
-  <label class="tab-label cursor-pointer p-4 border border-emerald-500" for="tab2">Всё расписание</label>
-
-
-   <div id="content1" class="tab-content">
-
-     <p>☝️ Нажмите “все”, чтобы увидеть прошедшие события с записями и полное будущее расписание </p>
-
-
-
-
-   </div>
-   <div id="content2" class="tab-content">
-
-       Здесь показывается вообще все
-
-   </div>
-</div>
+{#</div>#}
 
 
 
