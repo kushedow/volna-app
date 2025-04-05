@@ -8,8 +8,7 @@ from fastapi import HTTPException, UploadFile
 
 from config import ALLOWED_EXTENSIONS, UPLOAD_URL, UPLOAD_FOLDER
 from src.models.document import Document
-from io import BytesIO  # Import here to avoid circular dependencies
-from pdf2image import convert_from_bytes  # Import inside the try block
+import fitz  # Import PyMuPDF
 
 
 class GDrivePusher:
@@ -29,7 +28,7 @@ class GDrivePusher:
 
     async def _save_pdf_picture(self, file_contents: bytes, file_name: str):
 
-        import fitz  # Import PyMuPDF
+
 
         pdf_document = fitz.open(stream=file_contents, filetype="pdf")
         page = pdf_document[0]
