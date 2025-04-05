@@ -5,10 +5,11 @@ from typing import Dict, Any
 
 import httpx
 
-from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL
+from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL
 from src.models.customer import Customer
 from src.models.document import Document
 from src.models.faq import FAQ
+from src.models.group import Group, Person
 from src.models.speciality import Speciality
 
 
@@ -18,11 +19,12 @@ class GDriveFetcher(object):
 
         self.client = httpx.AsyncClient(timeout=15.0)
 
-        # Кешируем данные
+        # Данные , которые будут закешированы
 
         self.specialities: dict[int, Speciality] = {}
         self.documents: dict[int, Document] = {}
         self.customers: dict[int, Customer] = {}
+        self.groups: dict[int, Group] = {}
         self.faq: list[FAQ] = []
 
     async def preload(self):
@@ -32,8 +34,9 @@ class GDriveFetcher(object):
         self.documents = await self.get_all_documents()
         print("caching faq")
         self.faq = await self.get_all_faqs()
+        print("caching groups")
+        self.groups = await self.get_all_groups()
 
-        # self.customers = await self.get_all_customers()
 
     async def get_all_customers(self) -> dict[Any, Customer]:
         response = await self.client.get(CUSTOMERS_URL)
@@ -45,8 +48,6 @@ class GDriveFetcher(object):
 
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
         data = response.json()
-
-        logging.warn(data)
 
         if data.get("error"):
             logging.debug(data)
@@ -63,7 +64,12 @@ class GDriveFetcher(object):
             if doc_id in customer.docs_ready:
                 customer.docs[doc_id].is_uploaded = True
 
+        # Отдаем пользователю все вопросы
         customer.faq = self.faq
+        # Догружаем пользователю информацию о его группе
+        customer.group = self.groups.get(customer.group_id)
+
+        logging.warn(data)
 
         return customer
 
@@ -87,6 +93,46 @@ class GDriveFetcher(object):
         data = response.json()
         documents = {doc_data["id"]: Document(**doc_data) for doc_data in data}
         return documents
+
+    async def get_all_groups(self):
+
+        response = await self.client.get(GROUPS_URL, follow_redirects=True)
+        data = response.json()
+
+        groups = {}
+        for gr in data:
+
+            group_id = gr["id"]
+            chat_tg = gr["chat_tg"]
+
+            if not group_id:
+                continue
+
+            curator = Person(
+                name=gr.get("curator_name"),
+                role= "Куратор",
+                avatar=gr.get("curator_avatar"),
+                description=gr.get("curator_description"),
+                tg=gr.get("curator_tg"),
+            )
+            teacher = Person(
+                name=gr.get("teacher_name"),
+                role="Преподаватель",
+                avatar=gr.get("teacher_avatar"),
+                description=gr.get("teacher_description"),
+                tg=gr.get("teacher_tg"),
+            )
+            expert = Person(
+                name=gr.get("expert_name"),
+                role="Эксперт",
+                avatar=gr.get("expert_avatar"),
+                description=gr.get("expert_description"),
+                tg=gr.get("expert_tg"),
+            )
+
+            groups[group_id] = (Group(id=group_id, chat_tg=chat_tg, curator=curator, teacher=teacher, expert=expert))
+
+        return groups
 
     async def get_document(self, doc_id):
         if self.documents.get(doc_id) is not None:

@@ -1,0 +1,67 @@
+<section class="" id="customer__schedule">
+  <!-- Schedule Header -->
+  <h2 class="flex items-center gap-2 text-xl font-medium  mb-6">
+    <span class="text-xl">🗓️</span>
+    Расписание
+  </h2>
+
+    <style>
+
+    input[name="tabs"] {
+      position: absolute;
+      opacity: 0; /* Hide radio buttons */
+      width: 0;
+      height: 0;
+    }
+
+    .tab-label {
+
+
+      flex: 1; /* Distribute space evenly */
+    }
+
+    /* Style for checked/active tabs */
+    input[name="tabs"]:checked + .tab-label {
+      background-color: #ddd;
+      border-bottom: none; /* Remove bottom border */
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    /* Show content for the selected tab */
+    #tab1:checked ~ #content1,
+    #tab2:checked ~ #content2 {
+      display: block;
+    }
+</style>
+
+<div class="tab-container">
+
+  <input type="radio" id="tab1" name="tabs" checked>
+  <label class="tab-label cursor-pointer p-4 border  border-emerald-500" for="tab1">Ближайшее</label>
+
+  <input type="radio" id="tab2" name="tabs">
+  <label class="tab-label cursor-pointer p-4 border border-emerald-500" for="tab2">Всё расписание</label>
+
+
+   <div id="content1" class="tab-content">
+
+     <p>☝️ Нажмите “все”, чтобы увидеть прошедшие события с записями и полное будущее расписание </p>
+
+
+
+
+   </div>
+   <div id="content2" class="tab-content">
+
+       Здесь показывается вообще все
+
+   </div>
+</div>
+
+
+
+
+</section>

@@ -1,7 +1,10 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from src.models.document import Document
 from src.models.faq import FAQ
+from src.models.group import Group
 from src.models.speciality import Speciality
 
 
@@ -19,6 +22,9 @@ class Customer(BaseModel):
 
     docs: dict[int, Document] = Field(default_factory=dict, description="Обработанный список документов")
     faq: list[FAQ] = Field(default_factory=list, description="Список FAQ доступный пользователю")
+
+    group_id: str = Field(default=None, description="Указатель на группу")
+    group: Optional[Group] = Field(default=None, description="Объект группы с куратором, преподом и экспертом")
 
     notification_text: str = Field(default="")
     exam_status: str
