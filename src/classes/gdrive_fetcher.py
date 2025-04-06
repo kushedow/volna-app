@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 import httpx
 
-from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL
+from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL, CONFIG_URL
 from src.models.customer import Customer
 from src.models.document import Document
 from src.models.faq import FAQ
@@ -26,8 +26,12 @@ class GDriveFetcher(object):
         self.customers: dict[int, Customer] = {}
         self.groups: dict[int, Group] = {}
         self.faq: list[FAQ] = []
+        self.config: dict[str, str] = {}
 
     async def preload(self):
+        print("caching config")
+        self.config = await self.get_all_config()
+
         print("caching specialities")
         self.specialities = await self.get_all_specialties()
         print("caching documents")
@@ -152,3 +156,9 @@ class GDriveFetcher(object):
     async def get_document(self, doc_id):
         if self.documents.get(doc_id) is not None:
             return self.documents.get(doc_id)
+
+    async def get_all_config(self):
+        response = await self.client.get(CONFIG_URL, follow_redirects=True)
+        data = response.json()
+        config = {conf_data["key"]: conf_data["value"] for conf_data in data}
+        return config

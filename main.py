@@ -43,7 +43,7 @@ gd_pusher = GDrivePusher()
 @app.get("/profile/{amo_id}")
 async def profile(request: Request, amo_id: int):
     customer: Customer = await gd_fetcher.get_customer(amo_id)
-    context = {"request": request, "customer": customer, "amo_id": amo_id}
+    context = {"request": request, "customer": customer, "amo_id": amo_id, "config": gd_fetcher.config}
 
     if customer is None:
         return templates.TemplateResponse("errors/404.html", context, status_code=404)
@@ -53,14 +53,20 @@ async def profile(request: Request, amo_id: int):
 
 @app.get("/")
 async def say_hello(request: Request):
-    context = {"request": request}
+    context = {"request": request, "config": gd_fetcher.config}
     return templates.TemplateResponse("errors/404.html", context, status_code=404)
+
+
+@app.get("/refresh")
+async def refresh(request: Request):
+    await gd_fetcher.preload()
+    return {"status": "success"}
 
 
 @app.get("/documents/{amo_id}/{doc_id}")
 async def say_hello(request: Request, amo_id: int, doc_id: int):
     document: Document = await gd_fetcher.get_document(doc_id)
-    context = {"request": request, "document": document, "amo_id": amo_id}
+    context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
     return templates.TemplateResponse("document.html", context)
 
 
@@ -73,7 +79,7 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
         logging.debug(f"Загружаем  {file.filename} => файл {doc_id} от пользователя {amo_id}")
 
         document = await gd_pusher.upload_file(file, amo_id, doc_id)
-        context = {"request": request, "document": document, "amo_id": amo_id}
+        context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
 
         return templates.TemplateResponse("document.html", context)
 

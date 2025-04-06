@@ -7,6 +7,7 @@ UPLOAD_URL = GDRIVE_URL + "/upload"
 FAQ_URL = GDRIVE_URL + "/faq"
 GROUPS_URL = GDRIVE_URL + "/groups"
 EVENTS_URL = GDRIVE_URL + "/events"
+CONFIG_URL = GDRIVE_URL + "/config"
 
 ALLOWED_EXTENSIONS = ["pdf"]
 UPLOAD_FOLDER = "uploads"
