@@ -1,5 +1,10 @@
 from pydantic import BaseModel, Field
 
+class UploadedDocument(BaseModel):
+
+    customer_id: int = Field(...)
+    doc_id: int = Field(...)
+    gdrive_id: str = Field(...)
 
 class Document(BaseModel):
 

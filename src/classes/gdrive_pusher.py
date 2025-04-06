@@ -28,8 +28,6 @@ class GDrivePusher:
 
     async def _save_pdf_picture(self, file_contents: bytes, file_name: str):
 
-
-
         pdf_document = fitz.open(stream=file_contents, filetype="pdf")
         page = pdf_document[0]
         pix = page.get_pixmap()

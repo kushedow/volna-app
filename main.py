@@ -65,8 +65,18 @@ async def refresh(request: Request):
 
 @app.get("/documents/{amo_id}/{doc_id}")
 async def say_hello(request: Request, amo_id: int, doc_id: int):
+
+    uploaded: list[Document] = await gd_fetcher.get_document_uploads(amo_id, doc_id)
     document: Document = await gd_fetcher.get_document(doc_id)
-    context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
+
+    context = {
+        "request": request,
+        "document": document,
+        "uploaded": uploaded,
+        "amo_id": amo_id,
+        "config": gd_fetcher.config
+    }
+
     return templates.TemplateResponse("document.html", context)
 
 
@@ -79,6 +89,9 @@ async def upload_document(request: Request, file: UploadFile = File(...)):
         logging.debug(f"Загружаем  {file.filename} => файл {doc_id} от пользователя {amo_id}")
 
         document = await gd_pusher.upload_file(file, amo_id, doc_id)
+
+        # TODO process document_2 & document_3
+
         context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
 
         return templates.TemplateResponse("document.html", context)
