@@ -13,9 +13,7 @@ from src.classes.gdrive_fetcher import GDriveFetcher
 from src.classes.gdrive_pusher import GDrivePusher
 from src.models.customer import Customer
 from src.models.document import Document
-
-locale.setlocale(locale.LC_TIME, "ru_RU")
-
+from src.utils import format_datetime_ru
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,7 +40,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Настраиваем шаблоны
 templates = Jinja2Templates(directory="src/templates")
-templates.env.filters["rudate"] = lambda value: str(value.strftime("%d %B %H:%M")).lstrip("0")
+templates.env.filters["rudate"] = format_datetime_ru
 
 # Создаем адаптеры для гугл-доков
 gd_fetcher = GDriveFetcher()

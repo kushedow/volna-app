@@ -16,11 +16,14 @@
 
     .tab-label {
       flex: 1; /* Distribute space evenly */
+      border: 1px solid #1B3B36;
+
     }
 
     /* Style for checked/active tabs */
     input[name="tabs"]:checked + .tab-label {
       background-color: #1B3B36;
+      border: 1px solid #1B3B36;
       color: white;
     }
 
@@ -38,10 +41,10 @@
 <div class="tab-container bg-[#E1F4F6] p-4 pt-6 rounded-lg mb-6">
 
   <input type="radio" id="tab1" name="tabs" checked>
-  <label class="tab-label bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer mr-2" for="tab1">Ближайшее</label>
+  <label class="tab-label   text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer mr-2 " for="tab1">Ближайшее</label>
 
   <input type="radio" id="tab2" name="tabs">
-  <label class="tab-label bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer" for="tab2">Всё расписание</label>
+  <label class="tab-label b  text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer" for="tab2">Всё расписание</label>
 
    <div id="content1" class="tab-content mt-4">
      <p class="text-xs mt-6 mb-4">☝️Нажмите “Всё расписание”, чтобы увидеть прошедшие события с записями и полное будущее расписание </p>
@@ -62,11 +65,11 @@
 
      {% for event in customer.group.events %}
       <div class="mb-2">
-        <span class="mr-6"> {{ event.starts | rudate }} </span>
-        <span class="mr-6 text-sm mr-6"> {{ event.title }} </span>
-        <span class="text-gray text-sm mr-6"> {{ event.description }} </span>
-        {% if event.record %} <a href="{{ event.record }}" class="text-[#7FD1C5] text-sm mr-6"> Cмотреть запись </a> {% endif %}
-        {% if event.link %} <a href="{{ event.link }}" class="text-[#7FD1C5] text-sm mr-6"> Подключиться </a> {% endif %}
+        <span class="mr-2"> {{ event.starts | rudate }} </span>
+        <span class=" text-sm"> {{ event.title }} </span>
+        {% if event.description %} <span class="text-gray text-sm ml-2"> {{ event.description }} </span>{% endif %}
+        {% if event.record %} <a href="{{ event.record }}" class="text-[#7FD1C5] text-sm ml-2"> Cмотреть запись </a> {% endif %}
+        {% if event.link %} <a href="{{ event.link }}" class="text-[#7FD1C5] text-sm ml-2"> Подключиться </a> {% endif %}
       </div>
       {% endfor %}
 
