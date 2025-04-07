@@ -1,8 +1,17 @@
 
     <!-- Welcome Section -->
-    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-8">
+    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-6">
       Доброе утро, {{customer.first_name}}! 👋
     </h1>
+
+    {% if customer.notification_text %}
+    <!-- Promo Banner -->
+    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-4">
+      <p>
+        {{customer.notification_text}}
+      </p>
+    </div>
+    {% endif %}
 
     <!-- Quick Status Cards -->
     <div class="grid md:grid-cols-3 gap-4 mb-8">
@@ -44,11 +53,4 @@
     </div>
 
 
-    {% if customer.notification_text %}
-    <!-- Promo Banner -->
-    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
-      <p>
-        {{customer.notification_text}}
-      </p>
-    </div>
-    {% endif %}
+

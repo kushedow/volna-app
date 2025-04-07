@@ -2,6 +2,7 @@ import logging
 import locale
 from contextlib import asynccontextmanager
 
+import jinja2
 import uvicorn
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from httpx import ConnectError
@@ -13,7 +14,8 @@ from src.classes.gdrive_fetcher import GDriveFetcher
 from src.classes.gdrive_pusher import GDrivePusher
 from src.models.customer import Customer
 from src.models.document import Document
-from src.utils import format_datetime_ru
+from src.utils import format_datetime_ru, markdown_to_html
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,6 +43,7 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Настраиваем шаблоны
 templates = Jinja2Templates(directory="src/templates")
 templates.env.filters["rudate"] = format_datetime_ru
+templates.env.filters['markdown'] = markdown_to_html
 
 # Создаем адаптеры для гугл-доков
 gd_fetcher = GDriveFetcher()

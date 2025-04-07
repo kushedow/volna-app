@@ -148,7 +148,6 @@ class GDriveFetcher(object):
         for event in all_events:
             group_id = event["group_id"]
 
-            pprint(event)
 
             if groups[group_id]:
                 groups[group_id].events.append(GroupEvent(**event))

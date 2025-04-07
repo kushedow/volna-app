@@ -59,6 +59,12 @@
       </div>
       {% endfor %}
 
+      {% if customer.group.events_upcoming_3|length == 0 %}
+
+          <p>Нет ближайших событий.</p>
+
+      {% endif  %}
+
    </div>
 
    <div id="content2" class="tab-content mt-4">

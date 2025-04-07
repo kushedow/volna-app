@@ -1,4 +1,5 @@
 from datetime import datetime
+import markdown
 
 
 def format_datetime_ru(value: datetime):
@@ -12,4 +13,13 @@ def format_datetime_ru(value: datetime):
     year = value.year
     hour = value.hour
     minute = value.minute
-    return f"{day} {month} {year} {hour:02}:{minute:02}" #Ensure to add time
+    return f"{day} {month} {year} {hour:02}:{minute:02}"  # Ensure to add time
+
+
+def markdown_to_html(markdown_text: str) -> str:
+    try:
+        html = markdown.markdown(markdown_text)
+        return html
+    except Exception as e:
+        print(f"Error converting Markdown to HTML: {e}")
+        return None

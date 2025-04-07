@@ -24,15 +24,6 @@ class DocStage(Enum):
 
 
 
-
-
-
-
-
-
-
-
-
 class Customer(BaseModel):
     amo_id: int
     first_name: str
@@ -55,7 +46,8 @@ class Customer(BaseModel):
     notification_text: str = Field(default="")
 
     exam_status: str = Field(default="not_scheduled")
-    exam_info: str = Field(default="")
+    exam_info: str = Field(default="", description="Информация про экзамен'")
+    access_info: str = Field(default="", description="Информация про доступ")
 
     folder_id: str
 
