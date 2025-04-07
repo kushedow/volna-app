@@ -7,7 +7,7 @@ import httpx
 from fastapi import HTTPException, UploadFile
 
 from config import ALLOWED_EXTENSIONS, UPLOAD_URL, UPLOAD_FOLDER
-from src.models.document import Document
+from src.models.document import Document, UploadedDocument
 import fitz  # Import PyMuPDF
 
 
@@ -43,7 +43,7 @@ class GDrivePusher:
 
         return image_path
 
-    async def upload_file(self, file: UploadFile, amo_id: int, doc_id: int) -> Document:
+    async def upload_file(self, file: UploadFile, amo_id: int, doc_id: int) -> UploadedDocument:
 
         filename: str = file.filename
 
@@ -56,10 +56,9 @@ class GDrivePusher:
         data = {"amo_id": amo_id, "doc_id": doc_id, "file": file}
 
         response_data: dict = await self._send_to_gdrive(data)
-        document = Document(**response_data)
-        document.is_uploaded = True
+        uploaded_document = UploadedDocument(**response_data)
 
-        picture_url = await self._save_pdf_picture(contents, f"client_{amo_id}_doc_{doc_id}.png")
-        document.picture_url = picture_url
+        picture_url = await self._save_pdf_picture(contents, f"{uploaded_document.gdrive_id}.png")
+        uploaded_document.picture_url = picture_url
 
-        return document
+        return uploaded_document

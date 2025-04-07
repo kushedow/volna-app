@@ -1,7 +1,6 @@
 import logging
 from copy import copy
-from pprint import pprint
-from typing import Dict, Any
+from typing import Any
 
 import httpx
 
@@ -40,8 +39,6 @@ class GDriveFetcher(object):
         self.faq = await self.get_all_faqs()
         print("caching groups and its events")
         self.groups = await self.get_all_groups()
-
-
 
     async def get_all_customers(self) -> dict[Any, Customer]:
         response = await self.client.get(CUSTOMERS_URL)
@@ -118,7 +115,7 @@ class GDriveFetcher(object):
 
             curator = Person(
                 name=gr.get("curator_name"),
-                role= "Куратор",
+                role="Куратор",
                 avatar=gr.get("curator_avatar"),
                 description=gr.get("curator_description"),
                 tg=gr.get("curator_tg"),
@@ -147,7 +144,6 @@ class GDriveFetcher(object):
 
         for event in all_events:
             group_id = event["group_id"]
-
 
             if groups[group_id]:
                 groups[group_id].events.append(GroupEvent(**event))

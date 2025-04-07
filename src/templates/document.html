@@ -8,9 +8,21 @@
        <a href="/profile/{{ amo_id }}" class="text-gray-500">← Назад</a>
     </div>
 
-    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-4">
-      {{document.title}}
-    </h1>
+    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-4">{{document.title}}</h1>
+
+    <p class=" font-normal mb-4">
+      {{document.description}}
+    </p>
+
+    {% if document.uploads | length > 0 %}
+        <div class="grid grid-cols-3 gap-4">
+        {% for upload in document.uploads %}
+            <figure class="bg-[#E9F1F0] p-4 md:p-4 rounded-xl">
+                <img src="/uploads/{{ upload.gdrive_id }}.png" class="w-full" alt="Документ {{ upload.gdrive_id }}"/>
+            </figure>
+        {% endfor %}
+        </div>
+    {% endif  %}
 
     {% if document.is_uploaded %}
 
@@ -18,17 +30,11 @@
       <p>Файл загружен. Вы можете вернуться и загрузить остальные. Или загрузить еще, если хотите!</p>
     </div>
 
-    <figure class="md:w-xs"> <img src="/{{ document.picture_url }}" alt="" class="w-full"></figure>
-
     {% endif %}
 
-    <h3 class="text-lg font-normal">
-      {{document.description}}
-    </h3>
+
 
     <form action="/upload" method="post" enctype="multipart/form-data" class="">
-
-
 
       <input type="hidden" id="amo_id" name="amo_id" value="{{ amo_id }}">
       <input type="hidden" id="doc_id" name="doc_id" value="{{ document.id }}">

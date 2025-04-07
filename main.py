@@ -13,7 +13,7 @@ from starlette.staticfiles import StaticFiles
 from src.classes.gdrive_fetcher import GDriveFetcher
 from src.classes.gdrive_pusher import GDrivePusher
 from src.models.customer import Customer
-from src.models.document import Document
+from src.models.document import Document, UploadedDocument
 from src.utils import format_datetime_ru, markdown_to_html
 
 
@@ -75,31 +75,35 @@ async def refresh(request: Request):
 
 @app.get("/documents/{amo_id}/{doc_id}")
 async def say_hello(request: Request, amo_id: int, doc_id: int):
-    uploaded: list[Document] = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+
     document: Document = await gd_fetcher.get_document(doc_id)
+    document.uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
 
     context = {
         "request": request,
         "document": document,
-        "uploaded": uploaded,
         "amo_id": amo_id,
         "config": gd_fetcher.config
     }
 
     return templates.TemplateResponse("document.html", context)
 
-
 @app.post("/upload")
-async def upload_document(request: Request, file: UploadFile = File(...)):
+async def upload_documents(request: Request, file: UploadFile = File(...), file_2: UploadFile = File(...), file_3: UploadFile = File(...)):
     try:
         form_data = await request.form()
         amo_id, doc_id = int(form_data.get("amo_id")), int(form_data.get("doc_id"))
 
         logging.debug(f"Загружаем  {file.filename} => файл {doc_id} от пользователя {amo_id}")
 
-        document = await gd_pusher.upload_file(file, amo_id, doc_id)
+        files_to_upload = [file, file_2, file_3]
 
-        # TODO process document_2 & document_3
+        for one_file in files_to_upload:
+            uploaded_document: UploadedDocument = await gd_pusher.upload_file(one_file, amo_id, doc_id)
+            # files_to_upload.append(uploaded_document)
+
+        document: Document = await gd_fetcher.get_document(doc_id)
+        document.uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
 
         context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
 
