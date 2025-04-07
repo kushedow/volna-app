@@ -9,7 +9,7 @@ from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROU
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
 from src.models.faq import FAQ
-from src.models.group import Group, Person
+from src.models.group import Group, Person, GroupEvent
 from src.models.speciality import Speciality
 
 
@@ -74,14 +74,11 @@ class GDriveFetcher(object):
         # Догружаем пользователю информацию о его группе
         customer.group = self.groups.get(customer.group_id)
 
-        logging.warn(data)
-
         return customer
 
     async def get_document_uploads(self, amo_id, doc_id) -> list[UploadedDocument]:
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}/{doc_id}", follow_redirects=True)
         docs_data = response.json()
-        pprint(docs_data)
         return [UploadedDocument(**doc) for doc in docs_data]
 
     async def get_all_faqs(self) -> list[FAQ]:
@@ -151,12 +148,13 @@ class GDriveFetcher(object):
         for event in all_events:
             group_id = event["group_id"]
 
+            pprint(event)
+
             if groups[group_id]:
-                groups[group_id].events.append(event)
+                groups[group_id].events.append(GroupEvent(**event))
             else:
                 logging.warn(f"Не надена группа {group_id}")
 
-        logging.warn(groups)
         return groups
 
     async def get_document(self, doc_id):

@@ -1,4 +1,5 @@
 import logging
+import locale
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -12,6 +13,8 @@ from src.classes.gdrive_fetcher import GDriveFetcher
 from src.classes.gdrive_pusher import GDrivePusher
 from src.models.customer import Customer
 from src.models.document import Document
+
+locale.setlocale(locale.LC_TIME, "ru_RU")
 
 
 @asynccontextmanager
@@ -32,10 +35,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# Делаем доступными папки загрузки и статики
+# Папка с загрузками должна быть смонтирована на диск как хранилище, если используется serverless
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# Настраиваем шаблоны
 templates = Jinja2Templates(directory="src/templates")
+templates.env.filters["rudate"] = lambda value: str(value.strftime("%d %B %H:%M")).lstrip("0")
+
+# Создаем адаптеры для гугл-доков
 gd_fetcher = GDriveFetcher()
 gd_pusher = GDrivePusher()
 
@@ -65,7 +74,6 @@ async def refresh(request: Request):
 
 @app.get("/documents/{amo_id}/{doc_id}")
 async def say_hello(request: Request, amo_id: int, doc_id: int):
-
     uploaded: list[Document] = await gd_fetcher.get_document_uploads(amo_id, doc_id)
     document: Document = await gd_fetcher.get_document(doc_id)
 

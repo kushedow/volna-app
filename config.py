@@ -11,3 +11,5 @@ CONFIG_URL = GDRIVE_URL + "/config"
 
 ALLOWED_EXTENSIONS = ["pdf"]
 UPLOAD_FOLDER = "uploads"
+
+

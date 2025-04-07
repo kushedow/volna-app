@@ -48,5 +48,15 @@
 
         {% endfor %}
 
+
       </div>
+
+        {% if customer.docs_status.key != "docs_collecting"  %}
+
+            <div class="tab-container bg-[#E1F4F6] p-4 pt-6 rounded-lg mb-6">
+                {{ customer.docs_status.value }}
+            </div>
+
+        {% endif %}
+
     </section>

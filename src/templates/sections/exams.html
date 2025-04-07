@@ -1,9 +1,22 @@
-<section class ="mb-8" id="customer__exams">
+<section class="mb-8" id="customer__exams">
 
-    <h2 class ="flex items-center gap-2 text-xl font-medium mb-6"> ✍️ Экзамены </h2>
+    <h2 class="flex items-center gap-2 text-xl font-medium mb-6"> ✍️ Экзамены </h2>
 
-    <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">
-      <p>Нет регистрации на экзамен</p>
-    </div>
+    {% if customer.exam_status == "scheduled" %}
+
+
+        <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">
+            <p>{{ customer.exam_info }}</p>
+        </div>
+
+    {% elif customer.exam_status == "completed" %}
+        <p>Экзамен сдан успешно, поздравляем!</p>
+    {% else %}
+
+        <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">
+            <p>Нет регистрации на экзамен</p>
+        </div>
+
+    {% endif %}
 
 </section>
