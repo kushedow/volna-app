@@ -22,8 +22,6 @@ class DocStage(Enum):
     completed = "completed"
 
 
-
-
 class Customer(BaseModel):
     amo_id: int
     first_name: str
@@ -32,8 +30,8 @@ class Customer(BaseModel):
     specialty_id: int
     specialty: Speciality = Field(default=None)
 
-    docs_required: list[int]
-    docs_extra: list[int] = Field(default_factory=list)  # Provide a default value (empty list)
+    docs_required: list[int] = Field(default_factory=list)
+    docs_extra: list[str] = Field(default_factory=list)  # Provide a default value (empty list)
     docs_ready: list[int]
     docs_status: DocStage = DocStage.docs_collecting
 
@@ -66,4 +64,4 @@ class Customer(BaseModel):
     @property
     def docs_total_count(self) -> int:
         """Returns the total number of required documents."""
-        return len(self.docs_required + self.docs_extra)
+        return len(self.docs)

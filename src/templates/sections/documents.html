@@ -6,67 +6,46 @@
         <span class="bg-[#7FD1C5] text-white text-sm px-2 py-1 rounded-sm">{{customer.docs_completed_count}}/{{customer.docs_total_count}} собрано</span>
       </h2>
 
-      {# Выводим доки, если не все загружены #}
+      <div class="grid md:grid-cols-2 gap-4">
 
-      {% if customer.docs_completed_count < customer.docs_total_count  %}
+        {% for doc in customer.docs.values() %}
+          {% if doc.is_uploaded %}
 
-          <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-[#6bdd771a] p-4 md:p-6 rounded-xl shadow-sm  ">
+                <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
+                <p class="text-gray-600 text-sm mb-4">
+                  {{ doc.description }}
+                </p>
+                <div class=" ">
+                  <span class="pr-4 py-2">
+                      ✅ Загружен
+                  </span>
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
+                    Посмотреть
+                  </a>
+                </div>
+              </div>
 
-            {% for doc in customer.docs.values() %}
-              {% if doc.is_uploaded %}
+          {% else %}
 
-                  <div class="bg-[#6bdd771a] p-4 md:p-6 rounded-xl shadow-sm  ">
-                    <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
-                    <p class="text-gray-600 text-sm mb-4">
-                      {{ doc.description }}
-                    </p>
-                    <div class=" ">
-                      <span class="pr-4 py-2">
-                          ✅ Загружен
-                      </span>
-                      <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
-                        Посмотреть
-                      </a>
-                    </div>
-                  </div>
+              <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm">
+                <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
+                <p class="text-gray-600 text-sm mb-4">
+                  {{ doc.description }}
+                </p>
+                <div class=" ">
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
+                    Загрузить
+                  </a>
+                  <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
+                    Как получить
+                  </a>
+                </div>
+              </div>
 
-              {% else %}
-
-                  <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-                    <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
-                    <p class="text-gray-600 text-sm mb-4">
-                      {{ doc.description }}
-                    </p>
-                    <div class=" ">
-                      <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
-                        Загрузить
-                      </a>
-                      <a href="/documents/{{customer.amo_id }}/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded-xl">
-                        Как получить
-                      </a>
-                    </div>
-                  </div>
-
-              {% endif %}
-            {% endfor %}
-          </div>
-
-      {# Выводим статусы, если доки загружены #}
-      {% else %}
-          <div class="tab-container bg-[#E1F4F6] p-4 pt-4 rounded-lg mb-6">
-            {% if customer.docs_status.value == "docs_validating" %} Проверяем документы
-            {% elif customer.docs_status.value == "docs_submitting" %} Отправляем документы
-            {% elif customer.docs_status.value == "docs_dha_received" %} Документы отправлены в DHA
-            {% elif customer.docs_status.value == "dha_review" %} Документы на рассмотрении DHA
-            {% elif customer.docs_status.value == "dha_approved" %} Документы приняты DHA  }
-            {% elif customer.docs_status.value == "get_register_submitting" %} Отправляем документы Регистратору
-            {% elif customer.docs_status.value == "get_register_review" %} Документы на рассмотрении Регистратора
-            {% elif customer.docs_status.value == "get_register_approved" %} Документы приняты
-            {% elif customer.docs_status.value == "dha_approved" %} Документы приняты Регистратором
-            {% else %} Собираем документы
-            {% endif %}
-          </div>
-     {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
 
 
 </section>

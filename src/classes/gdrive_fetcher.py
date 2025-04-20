@@ -28,9 +28,9 @@ class GDriveFetcher(object):
         self.config: dict[str, str] = {}
 
     async def preload(self):
+
         print("caching config")
         self.config = await self.get_all_config()
-
         print("caching specialities")
         self.specialities = await self.get_all_specialties()
         print("caching documents")
@@ -40,38 +40,38 @@ class GDriveFetcher(object):
         print("caching groups and its events")
         self.groups = await self.get_all_groups()
 
-    async def get_all_customers(self) -> dict[Any, Customer]:
-        response = await self.client.get(CUSTOMERS_URL)
-        data = response.json()
-        customers = {cust.amo_id: Customer(**cust) for cust in data}
-        return customers
+    # async def get_all_customers(self) -> dict[Any, Customer]:
+    #     response = await self.client.get(CUSTOMERS_URL)
+    #     data = response.json()
+    #     customers = {cust.amo_id: Customer(**cust) for cust in data}
+    #     return customers
 
-    async def get_customer(self, amo_id) -> Customer | None:
-
-        response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
-        data = response.json()
-
-        if data.get("error"):
-            logging.debug(data)
-            return None
-
-        customer: Customer = Customer(**data)
-
-        for doc_id in (customer.docs_required + customer.docs_extra):
-
-            if (doc_id not in self.documents):
-                raise ValueError(f"Required for customer {amo_id} document: {doc_id} was not found")
-
-            customer.docs[doc_id] = copy(self.documents[doc_id])
-            if doc_id in customer.docs_ready:
-                customer.docs[doc_id].is_uploaded = True
-
-        # Отдаем пользователю все вопросы
-        customer.faq = self.faq
-        # Догружаем пользователю информацию о его группе
-        customer.group = self.groups.get(customer.group_id)
-
-        return customer
+    # async def get_customer(self, amo_id) -> Customer | None:
+    #
+    #     response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
+    #     data = response.json()
+    #
+    #     if data.get("error"):
+    #         logging.debug(data)
+    #         return None
+    #
+    #     customer: Customer = Customer(**data)
+    #
+    #     for doc_id in (customer.docs_required + customer.docs_extra):
+    #
+    #         if (doc_id not in self.documents):
+    #             raise ValueError(f"Required for customer {amo_id} document: {doc_id} was not found")
+    #
+    #         customer.docs[doc_id] = copy(self.documents[doc_id])
+    #         if doc_id in customer.docs_ready:
+    #             customer.docs[doc_id].is_uploaded = True
+    #
+    #     # Отдаем пользователю все вопросы
+    #     customer.faq = self.faq
+    #     # Догружаем пользователю информацию о его группе
+    #     customer.group = self.groups.get(customer.group_id)
+    #
+    #     return customer
 
     async def get_document_uploads(self, amo_id, doc_id) -> list[UploadedDocument]:
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}/{doc_id}", follow_redirects=True)
@@ -85,6 +85,8 @@ class GDriveFetcher(object):
         faq: list[FAQ] = [FAQ(**faq_item) for faq_item in faq_data]
         return faq
 
+    # СПЕЦИАЛЬНОСТИ
+
     async def get_all_specialties(self) -> dict[int, Speciality]:
 
         response = await self.client.get(SPECIALITIES_URL, follow_redirects=True)
@@ -92,12 +94,15 @@ class GDriveFetcher(object):
         specialities = {spec_data["id"]: Speciality(**spec_data) for spec_data in data}
         return specialities
 
-    async def get_all_documents(self) -> dict[int, Document]:
+    def get_specialty(self, specialty_id):
+        """
+        Возвращает специальность
+        :param specialty_id:
+        :return:
+        """
+        return self.specialities.get(specialty_id)
 
-        response = await self.client.get(DOCUMENTS_URL, follow_redirects=True)
-        data = response.json()
-        documents = {doc_data["id"]: Document(**doc_data) for doc_data in data}
-        return documents
+    # ГРУППЫ
 
     async def get_all_groups(self):
 
@@ -152,9 +157,40 @@ class GDriveFetcher(object):
 
         return groups
 
-    async def get_document(self, doc_id):
+    def get_group(self, group_id) -> Group | None:
+        """
+        Возвращает группу из закешированного списка
+        """
+        return self.groups.get(group_id)
+
+    # ДОКУМЕНТЫ
+
+    def get_document(self, doc_id):
+        """
+        Возвращает документ из закешированного списка документов
+        """
         if self.documents.get(doc_id) is not None:
             return self.documents.get(doc_id)
+
+    async def get_all_documents(self) -> dict[int, Document]:
+
+        response = await self.client.get(DOCUMENTS_URL, follow_redirects=True)
+        data = response.json()
+        documents = {doc_data["id"]: Document(**doc_data) for doc_data in data}
+        return documents
+
+    def get_documents_by_indices(self, indices, docs_ready) -> dict[int, Document]:
+        """
+        Возвращает словарь документов по индексам и отмечает загруженные
+        """
+        docs: dict[int, Document] = {}
+        for index in indices:
+            doc: Document = self.get_document(index)
+            if doc.id in docs_ready:
+                doc.is_uploaded = True
+            docs[doc.id] = doc
+
+        return docs
 
     async def get_all_config(self):
         response = await self.client.get(CONFIG_URL, follow_redirects=True)

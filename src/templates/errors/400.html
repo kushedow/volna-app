@@ -1,0 +1,33 @@
+{# templates/index.html #}
+{% extends "base.html" %}
+
+{% block title %}Volna - Личный кабинет{% endblock %}
+
+{% block content %}
+
+
+<div class="text-center max-w-xl mx-auto m-6">
+    <!-- Emoji Container -->
+    <div class="w-40 h-40 bg-[#E9F1F0] rounded-full flex items-center justify-center mx-auto mb-8">
+      <span class="text-8xl">🤔</span>
+    </div>
+
+    <!-- Header Text -->
+    <h1 class="text-2xl font-semibold text-[#1B3B36] mb-4">
+      Недостаточно данных.
+    </h1>
+
+    <!-- Description Text -->
+    <p class="text-[#647976] text-lg mb-4">
+      Пожалуйста, проверьте ссылку, по которой вы пришли, если ошибка повторяется, напишите нам!
+    </p>
+
+    <!-- Button -->
+    <button class="bg-[#1B3B36] text-white px-8 py-3 rounded-xl hover:bg-opacity-90 transition-colors">
+      Написать в поддержку
+    </button>
+  </div>
+
+
+
+{% endblock %}
