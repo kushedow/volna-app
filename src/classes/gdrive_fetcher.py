@@ -115,10 +115,10 @@ class GDriveFetcher(object):
         for event in all_events:
             group_id = event["group_id"]
 
-            if groups[group_id]:
+            if groups.get(group_id):
                 groups[group_id].events.append(GroupEvent(**event))
             else:
-                logging.warn(f"Не надена группа {group_id}")
+                logging.warn(f"Не найдена группа {group_id}")
 
         return groups
 
