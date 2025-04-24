@@ -20,6 +20,8 @@ AMO_ACCESS_TOKEN = os.getenv("AMO_ACCESS_TOKEN")
 ALLOWED_EXTENSIONS = ["pdf"]
 UPLOAD_FOLDER = "uploads"
 
-logger.add( UPLOAD_FOLDER + "/file_{time}.log", rotation="12:00")
+OPERATIONAL_FUNNEL_ID = 9490932
+
+logger.add(UPLOAD_FOLDER + "/file_{time}.log", rotation="12:00")
 
 

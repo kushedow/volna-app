@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
     logger.info("Запуск: Application starting up...")
     try:
         await gd_fetcher.preload()
+        await amo_fetcher.preload()
         logger.info("Запуск: Application started successfully!")
     except ConnectError as error:
         logger.error("Запуск: Cant connect to GDrive!")

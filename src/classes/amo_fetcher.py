@@ -5,7 +5,7 @@ from pprint import pprint
 
 import httpx
 
-from config import AMO_ACCESS_TOKEN, AMO_BASE_URL
+from config import AMO_ACCESS_TOKEN, AMO_BASE_URL, OPERATIONAL_FUNNEL_ID, logger
 from src.exceptions import InsufficientDataError
 from src.models.customer import Customer
 
@@ -14,11 +14,16 @@ class AMOFetcher:
 
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=15.0)
+        self.pipeline_steps = {}
 
-        self.fields = {
-            "group": "676687",
-            "product": "673621",
-        }
+        # self.fields = {
+        #     "group": "676687",
+        #     "product": "673621",
+        # }
+
+    async def preload(self) -> None:
+        self.pipeline_steps = await self.get_pipeline_steps()
+
 
     @property
     def headers(self) -> dict:
@@ -27,7 +32,7 @@ class AMOFetcher:
             'Content-Type': 'application/json'
         }
 
-    async def get_funnel_steps(self) -> dict:
+    async def get_pipeline_steps(self) -> dict[int, str]:
         """
         Получаем шаги воронки из Амо
         :return:
@@ -64,7 +69,11 @@ class AMOFetcher:
         """
         custom_fields = lead_data["custom_fields_values"]
         custom_keys = self.fields_keys.values()
-        lead_data = {}
+
+        customer_data = {
+            "pipeline_id": lead_data["pipeline_id"],
+            "status_id": lead_data["status_id"]
+        }
 
         for field in custom_fields:
             if field["field_id"] not in custom_keys:
@@ -75,15 +84,15 @@ class AMOFetcher:
             field_type = field["field_type"]
 
             if field_type == "checkbox":
-                lead_data[field_id] = field_value[0]["value"]
+                customer_data[field_id] = field_value[0]["value"]
             if field_type in ("text", "textarea"):
-                lead_data[field_id] = field_value[0]["value"]
+                customer_data[field_id] = field_value[0]["value"]
             if field_type == "multiselect":
-                lead_data[field_id] = [f["value"] for f in field_value]
+                customer_data[field_id] = [f["value"] for f in field_value]
             if field_type == "select":
-                lead_data[field_id] = field_value[0]["value"]
+                customer_data[field_id] = field_value[0]["value"]
 
-        return {key: lead_data.get(id) for key, id in self.fields_keys.items()}
+        return {key: customer_data.get(id) for key, id in self.fields_keys.items()}
 
     async def get_lead(self, lead_id) -> Customer | None:
         """
@@ -101,8 +110,11 @@ class AMOFetcher:
 
         pprint(lead_raw)
 
+        if lead_raw["pipeline_id"] != OPERATIONAL_FUNNEL_ID:
+            raise InsufficientDataError("Не находится на сопровождении")
+
         if lead_raw.get("custom_fields_values") is None :
-            raise InsufficientDataError("Не удалось загрузить расширенные данные клиента")
+            raise InsufficientDataError("Не загружаются расширенные данные клиента")
 
         lead_data = self._extract_lead_data(lead_raw)
 
@@ -110,18 +122,17 @@ class AMOFetcher:
             raise InsufficientDataError("Не указана информация про программу обучения")
 
         if not lead_data["is_activated"]:
-            raise InsufficientDataError("Ваш кабинет еще не активирован")
+            raise InsufficientDataError("Кабинет еще не активирован")
 
-
-
-        contact_id = lead_raw['_embedded']['contacts'][0]['id']
+        lead_data["amo_id"] = lead_id
+        lead_data["pipeline_id"] = lead_raw["pipeline_id"]
+        lead_data["status_id"] = lead_raw["status_id"]
         lead_data["specialty_id"] = int(lead_data["specialty_id"].split()[0])
-
         lead_data["docs_ready"] = [ int(doc.split()[0]) for doc in lead_data["docs_ready"]]
         lead_data["docs_extra"] = [ doc.strip() for doc in lead_data["docs_extra"].split()]
         lead_data["group_id"] = lead_data["group_id"][0]
-        lead_data["amo_id"] = lead_id
 
+        contact_id = lead_raw['_embedded']['contacts'][0]['id']
         contact = await self._get_contact(contact_id)
         if contact is not None:
             lead_data["first_name"] = contact["first_name"].split()[0]
@@ -154,13 +165,3 @@ class AMOFetcher:
             logging.exception(f"Unexpected error while fetching contact {contact_id}: {e}")
             return None #Or rise HTTP exception or reraise
 
-
-async def main():
-    amo_fetcher = AMOFetcher()
-    customer = await amo_fetcher.get_lead(17322537)
-    pprint(customer)
-    # statuses = await amo_fetcher.get_funnel_steps()
-    # print(statuses)
-
-
-asyncio.run(main())

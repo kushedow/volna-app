@@ -1,10 +1,7 @@
 import logging
-from copy import copy
-from typing import Any
-
 import httpx
 
-from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL, CONFIG_URL
+from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL, CONFIG_URL, logger
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
 from src.models.faq import FAQ
@@ -29,49 +26,17 @@ class GDriveFetcher(object):
 
     async def preload(self):
 
-        print("caching config")
+        logger.info("caching config")
         self.config = await self.get_all_config()
-        print("caching specialities")
+        logger.info("caching specialities")
         self.specialities = await self.get_all_specialties()
-        print("caching documents")
+        logger.info("caching documents")
         self.documents = await self.get_all_documents()
-        print("caching faq")
+        logger.info("caching faq")
         self.faq = await self.get_all_faqs()
-        print("caching groups and its events")
+        logger.info("caching groups and its events")
         self.groups = await self.get_all_groups()
 
-    # async def get_all_customers(self) -> dict[Any, Customer]:
-    #     response = await self.client.get(CUSTOMERS_URL)
-    #     data = response.json()
-    #     customers = {cust.amo_id: Customer(**cust) for cust in data}
-    #     return customers
-
-    # async def get_customer(self, amo_id) -> Customer | None:
-    #
-    #     response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}", follow_redirects=True)
-    #     data = response.json()
-    #
-    #     if data.get("error"):
-    #         logging.debug(data)
-    #         return None
-    #
-    #     customer: Customer = Customer(**data)
-    #
-    #     for doc_id in (customer.docs_required + customer.docs_extra):
-    #
-    #         if (doc_id not in self.documents):
-    #             raise ValueError(f"Required for customer {amo_id} document: {doc_id} was not found")
-    #
-    #         customer.docs[doc_id] = copy(self.documents[doc_id])
-    #         if doc_id in customer.docs_ready:
-    #             customer.docs[doc_id].is_uploaded = True
-    #
-    #     # Отдаем пользователю все вопросы
-    #     customer.faq = self.faq
-    #     # Догружаем пользователю информацию о его группе
-    #     customer.group = self.groups.get(customer.group_id)
-    #
-    #     return customer
 
     async def get_document_uploads(self, amo_id, doc_id) -> list[UploadedDocument]:
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}/{doc_id}", follow_redirects=True)

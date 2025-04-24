@@ -23,9 +23,13 @@ class DocStage(Enum):
 
 
 class Customer(BaseModel):
+
     amo_id: int
     first_name: str
     full_name: str
+
+    pipeline_id: int
+    status_id: int
 
     specialty_id: int
     specialty: Speciality = Field(default=None)
