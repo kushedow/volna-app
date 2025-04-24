@@ -1,31 +1,33 @@
-<section class ="mb-8" id="customer__accounts">
+{% if customer.group %}
 
-    <h2 class ="items-center mb-6">
-        <span class="text-xl font-medium mr-6">🧑‍🎓 Ваша группа: {{ customer.group.id}}</span>
-        <a href="{{customer.group.chat_tg}}" target="_blank"  class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 inline-block transition-colors">
-            Telegram чат группы
-          </a>
-    </h2>
+    <section class="mb-8" id="customer__accounts">
 
-     {% set team_members = [customer.group.expert, customer.group.teacher, customer.group.curator] %}
+        <h2 class="items-center mb-6">
+            <span class="text-xl font-medium mr-6">🧑‍🎓 Ваша группа: {{ customer.group.id }}</span>
+            <a href="{{ customer.group.chat_tg }}" target="_blank"
+               class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 inline-block transition-colors">
+                Telegram чат группы
+            </a>
+        </h2>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+        {% set team_members = [customer.group.expert, customer.group.teacher, customer.group.curator] %}
 
-        {% for member in team_members %}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+            {% for member in team_members %}
+                <div class=" ">
+                    <div class="mb-4 ">
+                        <img src="{{ member.avatar }}" alt="{{ member.role }}"
+                             class="rounded object-cover w-2/3 md:w-2/3 rounded"/>
+                    </div>
+                    <h3 class="text-lg font-medium text-[#1B3B36] mb-1">{{ member.role }}</h3>
+                    <p class="text-base text-[#647976] mb-3">{{ member.name }}</p>
+                    <a href="{{ member.tg }}" target="_blank"
+                       class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors">
+                        Telegram
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
 
-            <div class=" ">
-              <div class="mb-4 ">
-                <img src="{{member.avatar}}" alt="{{member.role}}" class="rounded object-cover w-2/3 md:w-2/3 rounded"/>
-              </div>
-              <h3 class="text-lg font-medium text-[#1B3B36] mb-1">{{member.role}}</h3>
-              <p class="text-base text-[#647976] mb-3">{{member.name}}</p>
-              <a href="{{member.tg}}" target="_blank"  class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors">
-                Telegram
-              </a>
-            </div>
-
-        {% endfor %}
-
-      </div>
-  
-</section>
+{% endif %}
