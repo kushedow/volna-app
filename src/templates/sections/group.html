@@ -11,9 +11,9 @@
         </h2>
 
         {% if customer.has_full_support %}
-            {% set team_members = [customer.group.expert, customer.group.teacher, customer.group.curator] %}
+            {% set team_members = [customer.group.expert,  customer.group.curator, customer.group.teacher] %}
         {%  else %}
-             {% set team_members = [customer.group.teacher, customer.group.curator] %}
+             {% set team_members = [customer.group.curator, customer.group.teacher ] %}
         {% endif %}
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
@@ -25,9 +25,11 @@
                     </div>
                     <h3 class="text-lg font-medium text-[#1B3B36] mb-1">{{ member.role }}</h3>
                     <p class="text-base text-[#647976] mb-3">{{ member.name }}</p>
+                    {% if member.tg %}
                     <a href="{{ member.tg }}" target="_blank"
                        class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors">
                         Telegram
+                     {% endif %}
                     </a>
                 </div>
             {% endfor %}

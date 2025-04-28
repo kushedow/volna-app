@@ -2,14 +2,14 @@
 
     <h2 class="flex items-center gap-2 text-xl font-medium mb-6"> ✍️ Экзамены </h2>
 
-    {% if customer.exam_status == "scheduled" %}
+    {% if customer.exam_status == "Назначен" %}
 
 
         <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">
             <p>{{ customer.exam_info | markdown | safe }}</p>
         </div>
 
-    {% elif customer.exam_status == "completed" %}
+    {% elif customer.exam_status in ("Сдан с первой", "Сдан со второй", "Сдан с третьей") %}
         <p>Экзамен сдан успешно, поздравляем!</p>
     {% else %}
 

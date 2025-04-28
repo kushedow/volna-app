@@ -149,41 +149,43 @@ class AMOFetcher:
         lead_data["folder_id"] = str(lead_data.get("folder_id", ""))
         lead_data["exam_info"] = str(lead_data.get("exam_info", ""))
 
+        try:
+            contact_id = lead_raw['_embedded']['contacts'][0]['id']
+            contact = await self._get_contact(contact_id)
+            if contact is not None:
+                lead_data["first_name"] = contact["first_name"].split()[0]
+                lead_data["full_name"] = contact["first_name"]
+        except (KeyError, IndexError):
+            lead_data["full_name"] = ""
+            lead_data["first_name"] = ""
 
-        # contact_id = lead_raw['_embedded']['contacts'][0]['id']
-        # contact = await self._get_contact(contact_id)
-        # if contact is not None:
-        #     lead_data["first_name"] = contact["first_name"].split()[0]
-        #     lead_data["full_name"] = contact["first_name"]
-        lead_data["full_name"] = lead_raw["name"]
-        lead_data["first_name"] = lead_raw["name"].split()[0]
 
         logger.debug(lead_data)
 
         customer = Customer(**lead_data)
 
         return customer
-    #
-    # async def _get_contact(self, contact_id) -> dict:
-    #     """
-    #     Получаем данные с именем клиента, так как в карточке лида его нет
-    #     :param contact_id:
-    #     :return:
-    #     """
-    #     try:
-    #         url = f"{AMO_BASE_URL}/api/v4/contacts/{contact_id}"
-    #         response = await self.client.get(url, headers=self.headers)
-    #         return response.json()
-    #     except httpx.HTTPStatusError as e:
-    #         logging.error(f"HTTP error while fetching contact {contact_id}: {e}")
-    #         return None  # Or raise an HTTPException to prevent operation
-    #     except httpx.RequestError as e:
-    #         logging.error(f"Request error while fetching contact {contact_id}: {e}")
-    #         return None  # Or raise an HTTPException
-    #     except json.JSONDecodeError as e:
-    #         logging.error(f"Failed to decode JSON response for contact {contact_id}: {e}")
-    #         return None #Or rise another type exception, or reraise.
-    #     except Exception as e:
-    #         logging.exception(f"Unexpected error while fetching contact {contact_id}: {e}")
-    #         return None #Or rise HTTP exception or reraise
-    #
+
+    async def _get_contact(self, contact_id) -> dict:
+        """
+        Получаем данные с именем клиента, так как в карточке лида его нет
+        :param contact_id:
+        :return:
+        """
+        try:
+            url = f"{AMO_BASE_URL}/api/v4/contacts/{contact_id}"
+            response = await self.client.get(url, headers=self.headers)
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            logging.error(f"HTTP error while fetching contact {contact_id}: {e}")
+            return None  # Or raise an HTTPException to prevent operation
+        except httpx.RequestError as e:
+            logging.error(f"Request error while fetching contact {contact_id}: {e}")
+            return None  # Or raise an HTTPException
+        except json.JSONDecodeError as e:
+            logging.error(f"Failed to decode JSON response for contact {contact_id}: {e}")
+            return None #Or rise another type exception, or reraise.
+        except Exception as e:
+            logging.exception(f"Unexpected error while fetching contact {contact_id}: {e}")
+            return None #Or rise HTTP exception or reraise
+
