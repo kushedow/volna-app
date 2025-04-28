@@ -16,6 +16,8 @@
     <!-- Quick Status Cards -->
     <div class="grid md:grid-cols-3 gap-4 mb-8">
 
+
+      {% if customer.has_full_support %}
       <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl">
         <div class="flex justify-between">
           <div>
@@ -25,8 +27,8 @@
           </div>
           <span class="text-5xl">👩‍⚕️</span>
         </div>
-
       </div>
+      {% endif %}
 
       <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl">
         <div class="flex justify-between">
@@ -39,6 +41,8 @@
         </div>
 
       </div>
+
+      {% if customer.has_full_support %}
       <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl">
         <div class="flex justify-between">
           <div>
@@ -48,8 +52,9 @@
           </div>
           <span class="text-5xl">📖</span>
         </div>
-
       </div>
+      {% endif %}
+
     </div>
 
 

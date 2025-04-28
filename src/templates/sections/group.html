@@ -10,7 +10,11 @@
             </a>
         </h2>
 
-        {% set team_members = [customer.group.expert, customer.group.teacher, customer.group.curator] %}
+        {% if customer.has_full_support %}
+            {% set team_members = [customer.group.expert, customer.group.teacher, customer.group.curator] %}
+        {%  else %}
+             {% set team_members = [customer.group.teacher, customer.group.curator] %}
+        {% endif %}
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {% for member in team_members %}

@@ -11,11 +11,14 @@
     {% else %}
       {% include 'sections/status.html' %}
       {% include 'sections/group.html' %}
-      {% include 'sections/documents.html' %}
+
+      {% if customer.has_full_support %}  {% include 'sections/documents.html' %} {% endif %}
+
+      {% include 'sections/events.html' %}
       {% include 'sections/exams.html' %}
       {% include 'sections/accounts.html' %}
-      {% include 'sections/events.html' %}
-      {% include 'sections/faq.html' %}
+
+      {% if customer.has_full_support %} {% include 'sections/faq.html' %}  {% endif %}
 
     {% endif %}
 

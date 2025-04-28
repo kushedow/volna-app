@@ -15,7 +15,7 @@ class GDriveFetcher(object):
 
         self.client = httpx.AsyncClient(timeout=15.0)
 
-        # Данные , которые будут закешированы
+        # Данные, которые будут закешированы
 
         self.specialities: dict[int, Speciality] = {}
         self.documents: dict[int, Document] = {}

@@ -51,9 +51,10 @@ class Customer(BaseModel):
     exam_info: str = Field(default="", description="Информация про экзамен'")
     access_info: str = Field(default="", description="Информация про доступ")
 
-    folder_id: str
+    folder_id: str = Field(default="", description="ID папки на гугл-диске")
 
     is_activated: bool = Field(default=False, description="Активировался ли уже пользователь")
+    has_full_support: bool = Field(default=False, description="Оплачено ли сопровождение (влияет на отображение блоков)")
 
     @property
     def docs_is_ready(self) -> bool:
