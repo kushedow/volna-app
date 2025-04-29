@@ -1,0 +1,40 @@
+{# templates/index.html #}
+{% extends "base.html" %}
+
+{% block title %}Volna - Личный кабинет{% endblock %}
+
+{% block content %}
+
+    <div class="mb-6">
+       <a href="/profile/{{ amo_id }}" class="text-gray-500">← Назад</a>
+    </div>
+
+   <h2 class="flex items-center gap-2 text-xl font-medium  mb-6">
+    <span class="text-xl">🗓️</span>
+    Расписание
+  </h2>
+
+  <table class="items-center w-full border-collapse text-blueGray-700">
+
+  {% for event in group.events %}
+     <tr class="border-b border-gray-300">
+
+        <th class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+           <span class="mr-2"> {{ event.starts | rudate }} </span>
+        </th>
+
+        <td class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
+           <span class=" text-sm"> {{ event.title }} </span>
+        </th>
+
+        <td class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+            {% if event.description %} <span class="text-gray text-sm ml-2"> {{ event.description }} </span>{% endif %}
+            {% if event.record %} <a href="{{ event.record }}" class="text-[#7FD1C5] text-sm ml-2"> Cмотреть запись </a> {% endif %}
+            {% if event.link %} <a href="{{ event.link }}" class="text-[#7FD1C5] text-sm ml-2"> Перейти </a> {% endif %}
+        </th>
+     </tr>
+   {% endfor %}
+
+   </table>
+
+{% endblock %}

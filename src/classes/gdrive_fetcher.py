@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import httpx
 
@@ -26,16 +27,17 @@ class GDriveFetcher(object):
 
     async def preload(self):
 
-        logger.info("caching config")
-        self.config = await self.get_all_config()
-        logger.info("caching specialities")
-        self.specialities = await self.get_all_specialties()
-        logger.info("caching documents")
-        self.documents = await self.get_all_documents()
-        logger.info("caching faq")
-        self.faq = await self.get_all_faqs()
-        logger.info("caching groups and its events")
-        self.groups = await self.get_all_groups()
+        results = await asyncio.gather(
+            self.get_all_config(),
+            self.get_all_specialties(),
+            self.get_all_documents(),
+            self.get_all_faqs(),
+            self.get_all_groups(),
+            return_exceptions=False,
+        )
+        logger.info("All data recached")
+
+        self.config, self.specialities, self.documents, self.faq, self.groups = results
 
 
     async def get_document_uploads(self, amo_id, doc_id) -> list[UploadedDocument]:
@@ -54,6 +56,7 @@ class GDriveFetcher(object):
 
     async def get_all_specialties(self) -> dict[int, Speciality]:
 
+        logger.info("Caching specialities")
         response = await self.client.get(SPECIALITIES_URL, follow_redirects=True)
         data = response.json()
         specialities = {spec_data["id"]: Speciality(**spec_data) for spec_data in data}
@@ -71,6 +74,7 @@ class GDriveFetcher(object):
 
     async def get_all_groups(self):
 
+        logger.info("Caching groups")
         response = await self.client.get(GROUPS_URL, follow_redirects=True)
         all_groups = response.json()
 
@@ -138,7 +142,7 @@ class GDriveFetcher(object):
             return self.documents.get(doc_id)
 
     async def get_all_documents(self) -> dict[int, Document]:
-
+        logger.info("Caching documents")
         response = await self.client.get(DOCUMENTS_URL, follow_redirects=True)
         data = response.json()
         documents = {doc_data["id"]: Document(**doc_data) for doc_data in data}
@@ -158,6 +162,7 @@ class GDriveFetcher(object):
         return docs
 
     async def get_all_config(self):
+        logger.info("Caching configs")
         response = await self.client.get(CONFIG_URL, follow_redirects=True)
         data = response.json()
         config = {conf_data["key"]: conf_data["value"] for conf_data in data}

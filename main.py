@@ -16,6 +16,8 @@ from src.classes.gdrive_pusher import GDrivePusher
 from src.exceptions import InsufficientDataError
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
+from src.models.group import Group
+from src.models.faq import FAQ
 from src.utils import format_datetime_ru, markdown_to_html
 
 from config import logger
@@ -76,7 +78,7 @@ async def profile(request: Request, amo_id: int):
 
     pprint(customer.docs)
 
-    return templates.TemplateResponse("profile.html", context)
+    return templates.TemplateResponse("pages/profile.html", context)
 
 @app.get("/")
 async def say_hello(request: Request):
@@ -91,7 +93,7 @@ async def refresh(request: Request):
 
 
 @app.get("/documents/{amo_id}/{doc_id}")
-async def say_hello(request: Request, amo_id: int, doc_id: int):
+async def documents(request: Request, amo_id: int, doc_id: int):
 
     document: Document = gd_fetcher.get_document(doc_id)
     document.uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
@@ -103,7 +105,39 @@ async def say_hello(request: Request, amo_id: int, doc_id: int):
         "config": gd_fetcher.config
     }
 
-    return templates.TemplateResponse("document.html", context)
+    return templates.TemplateResponse("pages/document.html", context)
+
+@app.get("/events/{amo_id}")
+async def events(request: Request, amo_id: int):
+    customer: Customer = await amo_fetcher.get_lead(amo_id)
+    group: Group = gd_fetcher.get_group(customer.group_id)
+
+    context = {
+        "request": request,
+        "group": group,
+        "amo_id": amo_id,
+        "config": gd_fetcher.config
+    }
+
+    return templates.TemplateResponse("pages/events.html", context)
+
+
+
+@app.get("/faq/{amo_id}")
+async def events(request: Request, amo_id: int):
+
+    faq: list[FAQ] = await gd_fetcher.get_all_faqs()
+
+    context = {
+        "request": request,
+        "faq": faq,
+        "amo_id": amo_id,
+        "config": gd_fetcher.config
+    }
+
+    return templates.TemplateResponse("pages/faq.html", context)
+
+
 
 @app.post("/upload")
 async def upload_documents(request: Request, file: UploadFile = File(...), file_2: UploadFile = File(...), file_3: UploadFile = File(...)):
@@ -125,7 +159,7 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
 
         context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
 
-        return templates.TemplateResponse("document.html", context)
+        return templates.TemplateResponse("pages/document.html", context)
 
     except ValueError:
         raise HTTPException(status_code=400, detail="amo_id and doc_id must be integers")

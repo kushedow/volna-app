@@ -1,54 +1,9 @@
-<section class="" id="customer__schedule">
+<section class="mb-8" id="customer__schedule ">
   <!-- Schedule Header -->
   <h2 class="flex items-center gap-2 text-xl font-medium  mb-6">
     <span class="text-xl">🗓️</span>
-    Расписание
+    Ближайшие события
   </h2>
-
-    <style>
-
-    input[name="tabs"] {
-      position: absolute;
-      opacity: 0; /* Hide radio buttons */
-      width: 0;
-      height: 0;
-    }
-
-    .tab-label {
-      flex: 1; /* Distribute space evenly */
-      border: 1px solid #1B3B36;
-      display: inline-block;
-
-    }
-
-    /* Style for checked/active tabs */
-    input[name="tabs"]:checked + .tab-label {
-      background-color: #1B3B36;
-      border: 1px solid #1B3B36;
-      color: white;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    /* Show content for the selected tab */
-    #tab1:checked ~ #content1,
-    #tab2:checked ~ #content2 {
-      display: block;
-    }
-</style>
-
-<div class="tab-container bg-[#E1F4F6] p-4 pt-6 rounded-lg mb-6">
-
-  <input type="radio" id="tab1" name="tabs" checked>
-  <label class="tab-label   text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer mr-2 " for="tab1">Ближайшее</label>
-
-  <input type="radio" id="tab2" name="tabs">
-  <label class="tab-label b  text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 transition-colors cursor-pointer" for="tab2">Всё расписание</label>
-
-   <div id="content1" class="tab-content mt-4">
-     <p class="text-xs mt-6 mb-4">☝️Нажмите “Всё расписание”, чтобы увидеть прошедшие события с записями и полное будущее расписание </p>
 
      {% for event in customer.group.events_upcoming_3 %}
       <div class="mb-2">
@@ -66,24 +21,8 @@
 
       {% endif  %}
 
-   </div>
-
-   <div id="content2" class="tab-content mt-4">
-
-     {% for event in customer.group.events %}
-      <div class="mb-2">
-        <span class="mr-2"> {{ event.starts | rudate }} </span>
-        <span class=" text-sm"> {{ event.title }} </span>
-        {% if event.description %} <span class="text-gray text-sm ml-2"> {{ event.description }} </span>{% endif %}
-        {% if event.record %} <a href="{{ event.record }}" class="text-[#7FD1C5] text-sm ml-2"> Cмотреть запись </a> {% endif %}
-        {% if event.link %} <a href="{{ event.link }}" class="text-[#7FD1C5] text-sm ml-2"> Перейти </a> {% endif %}
-      </div>
-      {% endfor %}
-
-   </div>
-
-</div>
-
-
+       <a href="/events/{{ amo_id }}"  class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded hover:bg-opacity-80 inline-block transition-colors">
+            Посмотреть все события, включая архив.
+       </a>
 
 </section>

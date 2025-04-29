@@ -1,29 +1,30 @@
-<section class="" id="customer__faq">
-  <!-- FAQ Header -->
-  <h2 class="flex items-center gap-2 text-xl font-medium  mb-6">
+<div class="mb-6">
+    <a href="/profile/{{ amo_id }}" class="text-gray-500">← Назад</a>
+</div>
+
+<h2 class="flex items-center gap-2 text-xl font-medium  mb-6">
     <span class="text-xl">📖</span>
     База знаний (FAQ)
-  </h2>
+</h2>
 
-  <!-- FAQ Items -->
-  {% for q in customer.faq %}
-  <div class="space-y-4">
+<!-- FAQ Items -->
+{% for q in faq %}
+    <div class="space-y-4">
 
-    <details class="group border-b border-gray-200" >
-      <summary class="flex items-center justify-between py-2 cursor-pointer list-none">
+        <details class="group border-b border-gray-200">
+            <summary class="flex items-center justify-between py-2 cursor-pointer list-none">
         <span class=" text-[#1B3B36]">
          {{ q.question }}
         </span>
-        <span class="transition group-open:rotate-180">
+                <span class="transition group-open:rotate-180">
           <svg width="24" height="24" fill="none" stroke="#1B3B36">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </span>
-      </summary>
-      <div class="py-2 text-[#647976] leading-relaxed">
-                 {{ q.answer }}
-      </div>
-    </details>
-  </div>
-  {%  endfor %}
-</section>
+            </summary>
+            <div class="py-2 text-[#647976] leading-relaxed">
+                {{ q.answer }}
+            </div>
+        </details>
+    </div>
+{% endfor %}

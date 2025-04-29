@@ -48,12 +48,24 @@
           <div>
               <h3 class="font-medium">База FAQ</h3>
               <p class="text-gray-600">Все вопросы</p>
-              <a href="#customer__faq" class="text-[#7FD1C5]">Перейти ↓</a>
+              <a href="/faq/{{ amo_id }}" class="text-[#7FD1C5]">Перейти ↓</a>
           </div>
           <span class="text-5xl">📖</span>
         </div>
       </div>
       {% endif %}
+
+       <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl">
+        <div class="flex justify-between">
+          <div>
+              <h3 class="font-medium">Расписание занятий</h3>
+              <p class="text-gray-500">Ближайшее ХХ мая</p>
+              <a href="/events/{{ amo_id }}" class="text-[#7FD1C5]">Смотреть все</a>
+          </div>
+
+        </div>
+      </div>
+
 
     </div>
 
