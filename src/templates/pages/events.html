@@ -19,19 +19,19 @@
   {% for event in group.events %}
      <tr class="border-b border-gray-300">
 
-        <th class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-           <span class="mr-2"> {{ event.starts | rudate }} </span>
+        <th class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-4 text-left">
+           <span class="mr-2 text-md"> {{ event.starts | rudate }} </span>
         </th>
 
         <td class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
            <span class=" text-sm"> {{ event.title }} </span>
-        </th>
+        </td>
 
-        <td class="border-t-0 pr-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <td class="border-t-0  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-4 text-right">
             {% if event.description %} <span class="text-gray text-sm ml-2"> {{ event.description }} </span>{% endif %}
             {% if event.record %} <a href="{{ event.record }}" class="text-[#7FD1C5] text-sm ml-2"> Cмотреть запись </a> {% endif %}
             {% if event.link %} <a href="{{ event.link }}" class="text-[#7FD1C5] text-sm ml-2"> Перейти </a> {% endif %}
-        </th>
+        </td>
      </tr>
    {% endfor %}
 

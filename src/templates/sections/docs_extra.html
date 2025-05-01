@@ -1,0 +1,28 @@
+
+    <!-- Documents Section -->
+    <section class="mb-8" id="customer__docs">
+      <h2 class="flex items-center gap-2 text-xl font-medium mb-6">
+        Дополнительные документы
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-4">
+
+        {% for doc in customer.docs_extra.values() %}
+
+              <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm">
+                <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
+                <p class="text-gray-600 text-sm mb-4">
+                  {{ doc.description }}
+                </p>
+                <div class="">
+                  <a href="/documents/{{customer.amo_id }}/extra/{{ doc.title }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
+                    Загрузить
+                  </a>
+                </div>
+              </div>
+
+        {% endfor %}
+      </div>
+
+
+</section>

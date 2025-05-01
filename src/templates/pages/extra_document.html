@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Volna - Личный кабинет{% endblock %}
+
+{% block content %}
+
+    <div class="mb-6">
+       <a href="/profile/{{ amo_id }}" class="text-gray-500">← Назад</a>
+    </div>
+
+    <h1 class="text-[#1B3B36] text-2xl font-semibold mb-4">{{document.title}}</h1>
+
+    <p class=" font-normal mb-4">
+      {{document.description}}
+    </p>
+
+    {% if document.uploads | length > 0 %}
+        <div class="grid grid-cols-3 gap-4">
+        {% for upload in document.uploads %}
+            <figure class="bg-[#E9F1F0] p-4 md:p-4 rounded-xl">
+                <img src="/uploads/{{ upload.gdrive_id }}.png" class="w-full" alt="Документ {{ upload.gdrive_id }}"/>
+            </figure>
+        {% endfor %}
+        </div>
+    {% endif  %}
+
+    {% if document.is_uploaded %}
+
+    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
+      <p>Файл загружен. Вы можете вернуться и загрузить остальные. Или загрузить еще, если хотите!</p>
+    </div>
+
+    {% endif %}
+
+
+
+    <form action="/upload" method="post" enctype="multipart/form-data" class="">
+
+      <input type="hidden" id="amo_id" name="amo_id" value="{{ amo_id }}">
+      <input type="hidden" id="doc_id" name="doc_id" value="{{ document.id }}">
+
+        <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl mt-6">
+
+            <p class="mb-2">{{ config.text_upload }}</p>
+
+            <input id="upload__filecontrol"
+                   name="file" type="file"
+                   class="mb-4 block w-full text-sm
+                   file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
+                   hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
+                   accept=".pdf"  required
+            />
+
+            <input id="upload__filecontrol"
+                   name="file_2" type="file"
+                   class="mb-4 block w-full text-sm
+                   file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
+                   hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
+                   accept=".pdf"
+            />
+
+            <input id="upload__filecontrol"
+                   name="file_3" type="file"
+                   class="mb-4 block w-full text-sm
+                   file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
+                   hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
+                   accept=".pdf"
+            />
+
+        <button id="upload__button" class="bg-[#214B57] hover:bg-[#346471] text-sm text-white py-3 px-4 rounded cursor-pointer flex items-center" type="submit">
+
+              <svg id="upload__animation" class="hidden animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+
+            <span id="upload__buttontext">Загрузить</span>
+
+        </button>
+
+      </div>
+
+    </form>
+
+    <div>
+      {{document.guide | safe }}
+    </div>
+
+<script>
+
+const uploadButton = document.getElementById('upload__button');
+
+uploadButton.addEventListener('click', function(event) {
+
+    const fileControl = document.querySelector("#upload__filecontrol")
+    if (fileControl.files.length !== 1) { return }
+
+    document.querySelector("#upload__animation").classList.remove("hidden")
+    document.querySelector("#upload__buttontext").innerHTML = "Идет загрузка ... "
+
+});
+
+</script>
+
+{% endblock %}

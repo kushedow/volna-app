@@ -24,7 +24,7 @@ class GasUploadedDocDict(TypedDict):
     guide: str
 
 
-class GDrivePusher:
+class DocManager:
 
     def __init__(self):
         self.client = httpx.AsyncClient(timeout=30.0, follow_redirects=True)

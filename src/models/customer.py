@@ -1,8 +1,10 @@
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from src.classes.amo.types import ExtraDoc
 from src.models.document import Document
 from src.models.faq import FAQ
 from src.models.group import Group
@@ -31,12 +33,12 @@ class Customer(BaseModel):
     pipeline_id: int
     status_id: int
 
-    specialty_id: int
+    specialty_id: int = Field(default=None)
     specialty: Speciality = Field(default=None)
 
     docs_required: list[int] = Field(default_factory=list)
-    docs_extra: list[str] = Field(default_factory=list)  # Provide a default value (empty list)
-    docs_ready: list[int]
+    docs_extra: dict[str, ExtraDoc] = Field(default_factory=dict)
+    docs_ready: list[int] = Field(default_factory=list)
     docs_status: DocStage = DocStage.docs_collecting
 
     docs: dict[int, Document] = Field(default_factory=dict, description="Обработанный список документов")
@@ -49,6 +51,8 @@ class Customer(BaseModel):
 
     exam_status: str = Field(default="not_scheduled")
     exam_info: str = Field(default="", description="Информация про экзамен'")
+    exam_datetime: datetime | None = Field(default="", description="Дата экзамена")
+
     access_info: str = Field(default="", description="Информация про доступ")
 
     folder_id: str = Field(default="", description="ID папки на гугл-диске")
