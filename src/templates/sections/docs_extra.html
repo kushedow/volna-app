@@ -9,20 +9,34 @@
 
         {% for doc in customer.docs_extra.values() %}
 
-              <div class="md:p-6 bg-[#E1F4F6] p-4 rounded-xl">
+              <div class="md:p-6 {% if doc.is_uploaded %}bg-green-100{% else %}border border-gray-300{% endif %} p-4 rounded-xl">
                 <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
                 <p class="text-gray-600 text-sm mb-4">
                   {{ doc.description }}
                 </p>
-                <div class="">
+
+              {% if doc.is_uploaded %}
+
+                    <p class=" ">
+                      <span class="pr-4 py-2">✅ Загружен </span>
+                      <a href="/documents/{{customer.amo_id }}/extra/{{ doc.id }}" class="bg-[#E9F1F0] text-[#1B3B36] px-4 py-2 rounded">
+                        Посмотреть
+                      </a>
+                    </p>
+
+              {% else %}
+
+                <p class="">
                   <a href="/documents/{{customer.amo_id }}/extra/{{ doc.title }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded">
                     Загрузить
                   </a>
-                </div>
+                </p>
+
+              {% endif %}
+
               </div>
 
         {% endfor %}
       </div>
-
 
 </section>

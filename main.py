@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     """Manages the application lifespan (startup and shutdown)."""
     logger.info("Запуск: Application starting up...")
     try:
-        await gd_fetcher.preload()
+        await gas_api.preload()
         logger.info("Запуск: Application started successfully!")
     except ConnectError as error:
         logger.error("Запуск: Cant connect to GDrive!")
@@ -51,57 +51,60 @@ templates.env.filters["rudate"] = format_datetime_ru
 templates.env.filters['markdown'] = markdown_to_html
 
 # Создаем адаптеры для гугл-доков
-gd_fetcher = GDriveFetcher()
+gas_api = GDriveFetcher()
 gd_pusher = DocManager()
 
 
 @app.get("/lk/{amo_id}")
 @app.get("/profile/{amo_id}")
 async def profile(request: Request, amo_id: int):
+
     customer: Customer = await amo_api.fetch_lead_data(amo_id)
 
-    context = {"request": request, "customer": customer, "amo_id": amo_id, "config": gd_fetcher.config}
 
     if customer is None:
         return templates.TemplateResponse("errors/404.html", context, status_code=404)
 
-    customer.faq = gd_fetcher.faq
-    customer.group = gd_fetcher.get_group(customer.group_id)
-    customer.specialty = gd_fetcher.get_specialty(customer.specialty_id)
+    customer.faq = gas_api.faq
+    customer.group = gas_api.get_group(customer.group_id)
+    customer.specialty = gas_api.get_specialty(customer.specialty_id)
 
     specialty_docs = customer.specialty.docs_required
-    customer.docs = gd_fetcher.get_documents_by_indices(specialty_docs, customer.docs_ready)
+    customer.docs = gas_api.get_documents_by_indices(specialty_docs, customer.docs_ready)
 
-    # TODO добавить информацию по реально загруженным докам
+    # Досыпаем пользователю информацию про все загруженные файлы пользователя
+    all_uploads: list[UploadedDocument] = await gas_api.get_all_uploads(amo_id)
+    customer.set_uploads(all_uploads)
 
     pprint(customer.docs)
+    context = {"request": request, "customer": customer, "amo_id": amo_id, "config": gas_api.config}
 
     return templates.TemplateResponse("pages/profile.html", context)
 
 
 @app.get("/")
 async def say_hello(request: Request):
-    context = {"request": request, "config": gd_fetcher.config}
+    context = {"request": request, "config": gas_api.config}
     return templates.TemplateResponse("errors/404.html", context, status_code=404)
 
 
 @app.get("/refresh")
 async def refresh(request: Request):
-    await gd_fetcher.preload()
+    await gas_api.preload()
     return {"status": "success"}
 
 
 @app.get("/documents/{amo_id}/{doc_id}")
 async def documents(request: Request, amo_id: int, doc_id: int):
-    document: Document = gd_fetcher.get_document(doc_id)
-    uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+    document: Document = gas_api.get_document(doc_id)
+    uploads = await gas_api.get_document_uploads(amo_id, doc_id)
 
     context = {
         "request": request,
         "document": document,
         "uploads": uploads,
         "amo_id": amo_id,
-        "config": gd_fetcher.config
+        "config": gas_api.config
     }
 
     return templates.TemplateResponse("pages/document.html", context)
@@ -116,7 +119,7 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
     if document is None:
         raise KeyError("Документ не найден")
 
-    uploads: list[UploadedDocument] = await gd_fetcher.get_document_uploads(amo_id, extra_title)
+    uploads: list[UploadedDocument] = await gas_api.get_document_uploads(amo_id, extra_title)
 
     context = {
         "request": request,
@@ -124,7 +127,7 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
         "uploads": uploads,
         "customer": customer,
         "amo_id": amo_id,
-        "config": gd_fetcher.config
+        "config": gas_api.config
     }
 
     return templates.TemplateResponse("pages/document.html", context)
@@ -133,13 +136,13 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
 @app.get("/events/{amo_id}")
 async def events(request: Request, amo_id: int):
     customer: Customer = await amo_api.fetch_lead_data(amo_id)
-    group: Group = gd_fetcher.get_group(customer.group_id)
+    group: Group = gas_api.get_group(customer.group_id)
 
     context = {
         "request": request,
         "group": group,
         "amo_id": amo_id,
-        "config": gd_fetcher.config
+        "config": gas_api.config
     }
 
     return templates.TemplateResponse("pages/events.html", context)
@@ -147,13 +150,13 @@ async def events(request: Request, amo_id: int):
 
 @app.get("/faq/{amo_id}")
 async def events(request: Request, amo_id: int):
-    faq: list[FAQ] = await gd_fetcher.get_all_faqs()
+    faq: list[FAQ] = await gas_api.get_all_faqs()
 
     context = {
         "request": request,
         "faq": faq,
         "amo_id": amo_id,
-        "config": gd_fetcher.config
+        "config": gas_api.config
     }
 
     return templates.TemplateResponse("pages/faq.html", context)
@@ -183,16 +186,16 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
 
         if doc_is_extra:
             document: ExtraDoc = customer.docs_extra.get(doc_id)
-            uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+            uploads = await gas_api.get_document_uploads(amo_id, doc_id)
         else:
-            document: Document = gd_fetcher.get_document(doc_id)
-            uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+            document: Document = gas_api.get_document(doc_id)
+            uploads = await gas_api.get_document_uploads(amo_id, doc_id)
 
         context = {
             "request": request,
             "document": document,
             "amo_id": amo_id,
-            "config": gd_fetcher.config,
+            "config": gas_api.config,
             "uploads": uploads,
             "doc_is_extra": doc_id.isalpha(),
         }
@@ -209,7 +212,7 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
 
 @app.exception_handler(InsufficientDataError)
 async def unicorn_exception_handler(request: Request, exc: InsufficientDataError):
-    context = {"request": request, "message": exc.message, "config": gd_fetcher.config}
+    context = {"request": request, "message": exc.message, "config": gas_api.config}
     return templates.TemplateResponse("errors/400.html", context, status_code=400)
 
 
@@ -222,7 +225,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
     context = {
         "request": request,
-        "config": gd_fetcher.config,
+        "config": gas_api.config,
         "error_message": exc
     }
 

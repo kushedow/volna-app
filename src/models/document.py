@@ -10,6 +10,7 @@ class UploadedDocument(BaseModel):
 
     created_at: datetime = Field(...)
 
+    is_extra: bool = Field(default=False, description="Is manually assigned document upload, having name, not ID")
     picture_url: str = Field(default=None, description="Picture URL of the document")
 
 class Document(BaseModel):

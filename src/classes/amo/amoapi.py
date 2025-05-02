@@ -36,7 +36,7 @@ class FieldConverter:
             if match:
                 doc_name = match.group(1).strip()
                 doc_description = match.group(2).strip()
-                doc_dict[doc_name] = {"title": doc_name, "description": doc_description}
+                doc_dict[doc_name] = {"id": doc_name, "title": doc_name, "description": doc_description, "is_uploaded": False}
             else:
                 # Log lines that don't match the expected format
                 logger.warning(f"Field {field.key if field else 'unknown'}: Line did not match expected format '[Name] Description': '{line}'")

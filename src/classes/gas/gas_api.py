@@ -12,7 +12,7 @@ from src.models.group import Group, Person, GroupEvent
 from src.models.speciality import Speciality
 
 
-class GDriveFetcher(object):
+class GDriveFetcher:
 
     def __init__(self):
 
@@ -49,6 +49,7 @@ class GDriveFetcher(object):
 
 
     async def get_all_uploads(self, amo_id) -> list[UploadedDocument]:
+
         response = await self.client.get(f"{GDRIVE_URL}/alldocs/{amo_id}", follow_redirects=True)
         docs_data: list[UploadedDocDict] = response.json()
         return [UploadedDocument(**doc) for doc in docs_data]

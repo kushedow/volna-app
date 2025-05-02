@@ -55,5 +55,7 @@ class UploadedDocDict(TypedDict):
 
 class ExtraDoc(TypedDict):
     """Назначенный призвольно в админке АМО документ, отдадется из АМО"""
+    id: str
     title: str
     description: str
+    is_uploaded: bool
