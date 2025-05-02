@@ -49,3 +49,5 @@ amo_api.add_custom_field("folder_id", 679711, str, "Папка на гугл-д�
 
 amo_api.add_custom_field("is_activated", 679695, bool, "Аккаунт активирован?", False)
 amo_api.add_custom_field("has_full_support", 680029, bool, "Куплено сопровождение", False)
+
+amo_api.add_custom_field("access_info", 680071, str, "Информация о доступах", "")
