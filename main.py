@@ -1,4 +1,3 @@
-import locale
 from contextlib import asynccontextmanager
 from pprint import pprint
 
@@ -11,8 +10,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
 from src.classes.amo.types import ExtraDoc
-from src.classes.amo_fetcher import AMOFetcher
-from src.classes.gdrive_fetcher import GDriveFetcher
+from src.classes.gas.gas_api import GDriveFetcher
 from src.classes.doc_manager import DocManager
 from src.exceptions import InsufficientDataError
 from src.models.customer import Customer
@@ -30,7 +28,6 @@ async def lifespan(app: FastAPI):
     logger.info("Запуск: Application starting up...")
     try:
         await gd_fetcher.preload()
-        await amo_fetcher.preload()
         logger.info("Запуск: Application started successfully!")
     except ConnectError as error:
         logger.error("Запуск: Cant connect to GDrive!")
@@ -55,7 +52,6 @@ templates.env.filters['markdown'] = markdown_to_html
 
 # Создаем адаптеры для гугл-доков
 gd_fetcher = GDriveFetcher()
-amo_fetcher = AMOFetcher()
 gd_pusher = DocManager()
 
 

@@ -33,9 +33,7 @@ class AmoCustomField:
 
 
 class CustomFieldDict(TypedDict):
-    """
-    Определяет структуру словаря для описания поля.
-    """
+    """Структура словаря произвольного поля, отдается из АМО"""
     field_id: int
     field_name: str
     field_type: str
@@ -43,13 +41,19 @@ class CustomFieldDict(TypedDict):
 
 
 class ContactDict(TypedDict):
-    """
-    Определяет структуру информации о к контакте полученную из AMO
-    """
+    """Информация о контакте,  отдается из AMO"""
     name: str
     first_name: str
     last_name: str
 
+class UploadedDocDict(TypedDict):
+    """Загруженный документ, отадетс GAS API"""
+    customer_id: int
+    doc_id: str | int
+    gdrive_id: str
+    created_at: str
+
 class ExtraDoc(TypedDict):
+    """Назначенный призвольно в админке АМО документ, отдадется из АМО"""
     title: str
     description: str

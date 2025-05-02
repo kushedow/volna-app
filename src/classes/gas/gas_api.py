@@ -4,6 +4,7 @@ import httpx
 
 from config import CUSTOMERS_URL, SPECIALITIES_URL, DOCUMENTS_URL, FAQ_URL, GROUPS_URL, EVENTS_URL, CONFIG_URL, logger, \
     GDRIVE_URL
+from src.classes.amo.types import UploadedDocDict
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
 from src.models.faq import FAQ
@@ -47,10 +48,10 @@ class GDriveFetcher(object):
         return [UploadedDocument(**doc) for doc in docs_data]
 
 
-    # async def get_all_uploads(self, amo_id) -> list[UploadedDocument]:
-    #     response = await self.client.get(f"{GDRIVE_URL}/alldocs/{amo_id}", follow_redirects=True)
-    #     docs_data = response.json()
-    #     return [UploadedDocument(**doc) for doc in docs_data]
+    async def get_all_uploads(self, amo_id) -> list[UploadedDocument]:
+        response = await self.client.get(f"{GDRIVE_URL}/alldocs/{amo_id}", follow_redirects=True)
+        docs_data: list[UploadedDocDict] = response.json()
+        return [UploadedDocument(**doc) for doc in docs_data]
 
 
     async def get_all_faqs(self) -> list[FAQ]:
