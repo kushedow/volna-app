@@ -135,6 +135,7 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
 
 @app.get("/events/{amo_id}")
 async def events(request: Request, amo_id: int):
+    """Вывод странички с событиями"""
     customer: Customer = await amo_api.fetch_lead_data(amo_id)
     group: Group = gas_api.get_group(customer.group_id)
 
@@ -150,6 +151,7 @@ async def events(request: Request, amo_id: int):
 
 @app.get("/faq/{amo_id}")
 async def events(request: Request, amo_id: int):
+    """Вывод странички FAQ"""
     faq: list[FAQ] = await gas_api.get_all_faqs()
 
     context = {
@@ -183,6 +185,8 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
             result = await gd_pusher.upload_file(one_file, amo_id, doc_id)
 
         logger.debug(f"Загрузка:  Начинаем загрузку файла {index}")
+
+        # Смотрим, какой документ, принимаем решение в зависимости от этого
 
         if doc_is_extra:
             document: ExtraDoc = customer.docs_extra.get(doc_id)

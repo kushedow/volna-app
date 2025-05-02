@@ -12,8 +12,10 @@
       {% include 'sections/status.html' %}
       {% include 'sections/group.html' %}
 
-      {% if customer.has_full_support %}  {% include 'sections/docs.html' %} {% endif %}
-      {% if customer.has_full_support %}  {% include 'sections/docs_extra.html' %} {% endif %}
+      {% if customer.has_full_support %}
+          {% include 'sections/docs.html' %}
+          {% include 'sections/docs_extra.html' %}
+      {% endif %}
 
       {% include 'sections/events.html' %}
       {% include 'sections/exams.html' %}

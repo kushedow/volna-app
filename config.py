@@ -35,7 +35,7 @@ amo_api.add_basic_field("status_id", int, "ID статуса")
 
 amo_api.add_custom_field("specialty_id", 679701, list, "ID специальности", 0, FC.list_first_number)
 
-amo_api.add_custom_field("docs_extra", 680059, str, "Экстрадоки строкой", [].copy() , FC.str_to_docdict)
+amo_api.add_custom_field("docs_extra", 680059, str, "Экстрадоки строкой", {}, FC.str_to_docdict)
 amo_api.add_custom_field("docs_ready", 679697, list, "Готовые документы", [].copy(), FC.list_to_int_list)
 
 amo_api.add_custom_field("notification_text", 679713, str, "Уведомление для ЛК", "")

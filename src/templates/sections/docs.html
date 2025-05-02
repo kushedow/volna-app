@@ -11,7 +11,7 @@
         {% for doc in customer.docs.values() %}
           {% if doc.is_uploaded %}
 
-              <div class="bg-green-100 p-4 md:p-6 rounded-xl">
+              <div class="bg-green-100 p-4 md:p-6 rounded-xl flex flex-col justify-between">
                 <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
                 <div class=" ">
                   <span class="pr-4 py-2">
