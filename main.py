@@ -98,11 +98,12 @@ async def refresh(request: Request):
 @app.get("/documents/{amo_id}/{doc_id}")
 async def documents(request: Request, amo_id: int, doc_id: int):
     document: Document = gd_fetcher.get_document(doc_id)
-    document.uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+    uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
 
     context = {
         "request": request,
         "document": document,
+        "uploads": uploads,
         "amo_id": amo_id,
         "config": gd_fetcher.config
     }
@@ -130,7 +131,7 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
         "config": gd_fetcher.config
     }
 
-    return templates.TemplateResponse("pages/extra_document.html", context)
+    return templates.TemplateResponse("pages/document.html", context)
 
 
 @app.get("/events/{amo_id}")
@@ -165,12 +166,17 @@ async def events(request: Request, amo_id: int):
 @app.post("/upload")
 async def upload_documents(request: Request, file: UploadFile = File(...), file_2: UploadFile = File(...),
                            file_3: UploadFile = File(...)):
+
     try:
         form_data = await request.form()
-        # amo_id, doc_id = int(form_data.get("amo_id")), int(form_data.get("doc_id"))
-        amo_id, doc_id = int(form_data.get("amo_id")), int(form_data.get("doc_id"))
 
-        logger.debug(f"Загрузка:  {file.filename} => файл {doc_id} от пользователя {amo_id}")
+        amo_id = int(form_data.get("amo_id"))
+        doc_id: str = form_data.get("doc_id")
+        doc_is_extra: bool = bool(form_data.get("doc_is_extra"))
+
+        customer: Customer = await amo_api.fetch_lead_data(amo_id)
+
+        logger.debug(f"Загрузка: {file.filename} => файл {doc_id} от пользователя {amo_id}")
 
         files_to_upload = filter(lambda f: f.filename, [file, file_2, file_3])
         for index, one_file in enumerate(files_to_upload, start=1):
@@ -179,15 +185,26 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
 
         logger.debug(f"Загрузка:  Начинаем загрузку файла {index}")
 
-        document: Document = gd_fetcher.get_document(doc_id)
-        document.uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+        if doc_is_extra:
+            document: ExtraDoc = customer.docs_extra.get(doc_id)
+            uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
+        else:
+            document: Document = gd_fetcher.get_document(doc_id)
+            uploads = await gd_fetcher.get_document_uploads(amo_id, doc_id)
 
-        context = {"request": request, "document": document, "amo_id": amo_id, "config": gd_fetcher.config}
+        context = {
+            "request": request,
+            "document": document,
+            "amo_id": amo_id,
+            "config": gd_fetcher.config,
+            "uploads": uploads,
+            "doc_is_extra": doc_id.isalpha(),
+        }
 
         return templates.TemplateResponse("pages/document.html", context)
 
     except ValueError:
-        raise HTTPException(status_code=400, detail="amo_id and doc_id must be integers")
+        raise HTTPException(status_code=400, detail="amo_id or doc_id incorrect")
     except HTTPException as e:
         raise e  # Re-raise HTTPExceptions
     except Exception as e:

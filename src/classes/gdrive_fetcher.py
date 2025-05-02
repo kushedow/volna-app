@@ -146,6 +146,7 @@ class GDriveFetcher(object):
         """
         Возвращает документ из закешированного списка документов
         """
+
         if self.documents.get(doc_id) is not None:
             return self.documents.get(doc_id)
 

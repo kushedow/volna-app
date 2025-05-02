@@ -14,9 +14,9 @@
       {{document.description}}
     </p>
 
-    {% if document.uploads | length > 0 %}
+    {% if uploads | length > 0 %}
         <div class="grid grid-cols-3 gap-4">
-        {% for upload in document.uploads %}
+        {% for upload in uploads %}
             <figure class="bg-[#E9F1F0] p-4 md:p-4 rounded-xl">
                 <img src="/uploads/{{ upload.gdrive_id }}.png" class="w-full" alt="Документ {{ upload.gdrive_id }}"/>
             </figure>
@@ -33,19 +33,18 @@
     {% endif %}
 
 
-
     <form action="/upload" method="post" enctype="multipart/form-data" class="">
 
       <input type="hidden" id="amo_id" name="amo_id" value="{{ amo_id }}">
       <input type="hidden" id="doc_id" name="doc_id" value="{{ document.id }}">
 
-        <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl mt-6">
+      <div class="bg-[#E9F1F0] p-4 md:p-6 rounded-xl mt-6">
 
             <p class="mb-2">{{ config.text_upload }}</p>
 
             <input id="upload__filecontrol"
                    name="file" type="file"
-                   class="mb-4 block w-full text-sm
+                   class="mb-4 block w-full text-sm cursor-pointer
                    file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
                    hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
                    accept=".pdf"  required
@@ -53,7 +52,7 @@
 
             <input id="upload__filecontrol"
                    name="file_2" type="file"
-                   class="mb-4 block w-full text-sm
+                   class="mb-4 block w-full text-sm cursor-pointer
                    file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
                    hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
                    accept=".pdf"
@@ -61,7 +60,7 @@
 
             <input id="upload__filecontrol"
                    name="file_3" type="file"
-                   class="mb-4 block w-full text-sm
+                   class="mb-4 block w-full text-sm cursor-pointer
                    file:mr-4 file:rounded-md file:border-0 file:bg-teal-500 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-white
                    hover:file:bg-teal-700 focus:outline-none disabled:pointer-events-none disabled:opacity-60"
                    accept=".pdf"
