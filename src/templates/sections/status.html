@@ -22,7 +22,7 @@
         <div class="flex justify-between">
           <div>
                 <h3 class="font-medium">Документы</h3>
-                <p class="text-gray-600">{{customer.docs_completed_count}}/{{customer.docs_total_count}} собрано</p>
+                <p class="text-gray-600">Х/Х собрано</p>
                 <a href="#customer__docs" class="text-[#7FD1C5]">Перейти ↓</a>
           </div>
           <span class="text-5xl">👩‍⚕️</span>
@@ -34,7 +34,9 @@
         <div class="flex justify-between">
             <div>
                  <h3 class="font-medium">Экзамен</h3>
-                 <p class="text-gray-600">не назначен</p>
+
+                 <p class="text-gray-600">{{ customer.exam_status }}</p>
+
                  <a href="#customer__exams" class="text-[#7FD1C5]">Перейти ↓</a>
             </div>
             <span class="text-5xl">✍️</span>
@@ -59,10 +61,9 @@
         <div class="flex justify-between">
           <div>
               <h3 class="font-medium">Расписание занятий</h3>
-              <p class="text-gray-500">Ближайшее ХХ мая</p>
+              {# <p class="text-gray-500">Ближайшее ХХ мая</p> #}
               <a href="/events/{{ amo_id }}" class="text-[#7FD1C5]">Смотреть все</a>
           </div>
-
         </div>
       </div>
 

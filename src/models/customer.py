@@ -79,6 +79,7 @@ class Customer(BaseModel):
 
     def set_uploads(self, uploads: list[UploadedDocument]):
         """Sets uploaded status info for basic and extra uploads"""
+
         for upload in uploads:
             # Если дополнительный документ
             if upload.is_extra:
