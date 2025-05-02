@@ -10,6 +10,7 @@ from starlette.requests import Request
 from fastapi.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
+from src.classes.amo.types import ExtraDoc
 from src.classes.amo_fetcher import AMOFetcher
 from src.classes.gdrive_fetcher import GDriveFetcher
 from src.classes.doc_manager import DocManager
@@ -111,11 +112,19 @@ async def documents(request: Request, amo_id: int, doc_id: int):
 
 @app.get("/documents/{amo_id}/extra/{extra_title}")
 async def extra_documents(request: Request, amo_id: int, extra_title: str):
+
     customer: Customer = await amo_api.fetch_lead_data(amo_id)
-    document = customer.docs_extra.get(extra_title)
+    document: ExtraDoc | None = customer.docs_extra.get(extra_title)
+
+    if document is None:
+        raise KeyError("Документ не найден")
+
+    uploads: list[UploadedDocument] = await gd_fetcher.get_document_uploads(amo_id, extra_title)
+
     context = {
         "request": request,
         "document": document,
+        "uploads": uploads,
         "customer": customer,
         "amo_id": amo_id,
         "config": gd_fetcher.config
@@ -126,7 +135,7 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
 
 @app.get("/events/{amo_id}")
 async def events(request: Request, amo_id: int):
-    customer: Customer = await amo_fetcher.get_lead(amo_id)
+    customer: Customer = await amo_api.fetch_lead_data(amo_id)
     group: Group = gd_fetcher.get_group(customer.group_id)
 
     context = {

@@ -9,13 +9,13 @@
 
         {% for doc in customer.docs_extra.values() %}
 
-              <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm">
+              <div class="md:p-6 bg-[#E1F4F6] p-4 rounded-xl">
                 <h3 class="text-[#1B3B36] font-medium mb-2">{{ doc.title }}</h3>
                 <p class="text-gray-600 text-sm mb-4">
                   {{ doc.description }}
                 </p>
                 <div class="">
-                  <a href="/documents/{{customer.amo_id }}/extra/{{ doc.title }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded-xl">
+                  <a href="/documents/{{customer.amo_id }}/extra/{{ doc.title }}" class="bg-[#7FD1C5] text-white px-4 py-2 mr-2 rounded">
                     Загрузить
                   </a>
                 </div>

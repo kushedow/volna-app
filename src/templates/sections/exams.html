@@ -5,13 +5,16 @@
     {% if customer.exam_status == "Назначен" %}
 
         <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">
-            <p>{{ customer.exam_info | markdown | safe }}</p>
-
-            <p>Дата экзамена: {{ customer.exam_datetime }}</p>
+        <p>{{ customer.exam_info | markdown | safe }}</p>
+        <p>Дата экзамена: {{ customer.exam_datetime | rudate }}</p>
+        <p>Указано местное время города, где сдаем экзамен! </p>
+        <p class="mt-4"><a href="https://education.volna.me/pl/fileservice/user/file/download/h/25dc1f423617d88038ff4e10c71a070f.pdf" target="_blank" class="text-emerald-500 font-bold underlined">🧭&nbsp;<u>Гайд по городам сдачи экзамена</u></a></p>
         </div>
 
     {% elif customer.exam_status in ("Сдан с первой", "Сдан со второй", "Сдан с третьей") %}
+
         <p>Экзамен сдан успешно, поздравляем!</p>
+
     {% else %}
 
         <div class="bg-[#E1F4F6] p-4 rounded-xl mb-8">

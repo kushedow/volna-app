@@ -14,9 +14,9 @@
       {{document.description}}
     </p>
 
-    {% if document.uploads | length > 0 %}
+    {% if uploads | length > 0 %}
         <div class="grid grid-cols-3 gap-4">
-        {% for upload in document.uploads %}
+        {% for upload in uploads %}
             <figure class="bg-[#E9F1F0] p-4 md:p-4 rounded-xl">
                 <img src="/uploads/{{ upload.gdrive_id }}.png" class="w-full" alt="Документ {{ upload.gdrive_id }}"/>
             </figure>

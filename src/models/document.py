@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 class UploadedDocument(BaseModel):
     customer_id: int = Field(...)
-    doc_id: int = Field(...)
+    doc_id: int | str = Field(...)
     gdrive_id: str = Field(...)
     created_at: datetime = Field(...)
     picture_url: str = Field(default=None, description="Picture URL of the document")
