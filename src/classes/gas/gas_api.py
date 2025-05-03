@@ -16,7 +16,7 @@ class GDriveFetcher:
 
     def __init__(self):
 
-        self.client = httpx.AsyncClient(timeout=15.0)
+        self.client = httpx.AsyncClient(timeout=30.0)
 
         # Данные, которые будут закешированы
 
@@ -41,19 +41,16 @@ class GDriveFetcher:
 
         self.config, self.specialities, self.documents, self.faq, self.groups = results
 
-
     async def get_document_uploads(self, amo_id, doc_id) -> list[UploadedDocument]:
         response = await self.client.get(f"{CUSTOMERS_URL}/{amo_id}/{doc_id}", follow_redirects=True)
         docs_data = response.json()
         return [UploadedDocument(**doc) for doc in docs_data]
-
 
     async def get_all_uploads(self, amo_id) -> list[UploadedDocument]:
 
         response = await self.client.get(f"{GDRIVE_URL}/alldocs/{amo_id}", follow_redirects=True)
         docs_data: list[UploadedDocDict] = response.json()
         return [UploadedDocument(**doc) for doc in docs_data]
-
 
     async def get_all_faqs(self) -> list[FAQ]:
 

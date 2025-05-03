@@ -1,8 +1,12 @@
 {% if customer.docs_extra %}
     <!-- Documents Section -->
     <section class="mb-8" id="customer__docs">
+
       <h2 class="flex items-center gap-2 text-xl font-medium mb-6">
         Дополнительные документы
+      <span class="bg-[#7FD1C5] text-white text-sm px-2 py-1 rounded-sm">
+            {{customer.docs_stats.extra_uploaded}}/{{customer.docs_stats.extra_total}} собрано
+      </span>
       </h2>
 
       <div class="grid md:grid-cols-2 gap-4">

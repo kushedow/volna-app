@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from src.classes.amo.types import ExtraDoc
+from src.classes.amo.types import ExtraDoc, DocStatsDict
 from src.models.document import Document, UploadedDocument
 from src.models.faq import FAQ
 from src.models.group import Group
@@ -62,20 +62,6 @@ class Customer(BaseModel):
     is_activated: bool = Field(default=False, description="Активировался ли уже пользователь")
     has_full_support: bool = Field(default=False, description="Оплачено ли сопровождение (влияет на отображение блоков)")
 
-    @property
-    def docs_is_ready(self) -> bool:
-        """Returns True if docs_required == docs_ready."""
-        return sorted(self.docs_required) == sorted(self.docs_ready)
-
-    @property
-    def docs_completed_count(self) -> int:
-        """Returns the number of completed documents."""
-        return len(self.docs_ready)
-
-    @property
-    def docs_total_count(self) -> int:
-        """Returns the total number of required documents."""
-        return len(self.docs)
 
     def set_uploads(self, uploads: list[UploadedDocument]):
         """Sets uploaded status info for basic and extra uploads"""
@@ -91,3 +77,23 @@ class Customer(BaseModel):
                 doc = self.docs.get(upload.doc_id)
                 if doc is not None:
                     doc.is_uploaded = True
+
+    @property
+    def docs_stats(self) -> DocStatsDict:
+
+        basic_total = len(self.docs)
+        basic_uploaded = sum([1 if doc.is_uploaded else 0 for doc in self.docs.values()])
+        extra_total = len(self.docs_extra)
+        extra_uploaded = sum([1 if doc["is_uploaded"] else 0 for doc in self.docs_extra.values()])
+
+        total = basic_total + extra_total
+        uploaded = basic_uploaded + extra_uploaded
+
+        return {
+            "total": total,
+            "uploaded": uploaded,
+            "basic_total": basic_total,
+            "basic_uploaded":basic_uploaded,
+            "extra_total": extra_total,
+            "extra_uploaded": extra_uploaded,
+        }

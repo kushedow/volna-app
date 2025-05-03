@@ -46,6 +46,7 @@ class ContactDict(TypedDict):
     first_name: str
     last_name: str
 
+
 class UploadedDocDict(TypedDict):
     """Загруженный документ, отадетс GAS API"""
     customer_id: int
@@ -53,9 +54,22 @@ class UploadedDocDict(TypedDict):
     gdrive_id: str
     created_at: str
 
+
 class ExtraDoc(TypedDict):
     """Назначенный призвольно в админке АМО документ, отдадется из АМО"""
     id: str
     title: str
     description: str
     is_uploaded: bool
+
+
+class DocStatsDict(TypedDict):
+    """
+     Вывод статистики документов для шаблона
+    """
+    total: int
+    uploaded: int
+    basic_total: int
+    basic_uploaded: int
+    extra_total: int
+    extra_uploaded: int
