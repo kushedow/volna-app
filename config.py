@@ -1,4 +1,5 @@
 import os
+import zoneinfo
 from datetime import datetime
 
 from loguru import logger
@@ -23,6 +24,7 @@ ALLOWED_EXTENSIONS = ["pdf"]
 UPLOAD_FOLDER = "uploads"
 
 OPERATIONAL_FUNNEL_ID = 9490932
+TIMEZONE = zoneinfo.ZoneInfo("Asia/Qatar")
 
 logger.add(UPLOAD_FOLDER + "/file_{time}.log", rotation="12:00")
 

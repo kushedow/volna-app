@@ -1,7 +1,10 @@
+import zoneinfo
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+TIMEZONE = zoneinfo.ZoneInfo("Asia/Qatar")
 
 
 class Person(BaseModel):
@@ -19,6 +22,10 @@ class GroupEvent(BaseModel):
     record: str = Field(default="", description="Record link")
     starts: datetime = Field(default=None, description="Event link")
     ends: datetime = Field(default=None, description="Event link")
+
+    @field_validator('starts', 'ends', mode='after')
+    def make_datetime_utc_aware(cls, v: datetime) -> datetime:
+        return v.astimezone(TIMEZONE)
 
 
 class Group(BaseModel):
