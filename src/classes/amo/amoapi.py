@@ -1,5 +1,6 @@
 import json
-from datetime import datetime
+import zoneinfo
+from datetime import datetime, timezone
 from pprint import pprint
 import re
 
@@ -46,7 +47,8 @@ class FieldConverter:
     @staticmethod
     def timestamp_to_datetime(field: AmoCustomField | AmoBasicField, timestamp: int | str) -> datetime:
         logger.debug(timestamp)
-        return datetime.fromtimestamp(int(timestamp))
+        asian_plus_3_tz = zoneinfo.ZoneInfo("Asia/Qatar")
+        return datetime.fromtimestamp(int(timestamp), tz=asian_plus_3_tz)
 
     @staticmethod
     def list_to_int_list(field: AmoCustomField | AmoBasicField, elements: list, default=None):
