@@ -5,10 +5,8 @@
 
 {% block content %}
 
-    {% if not customer.is_activated %}
       {% include 'sections/welcome.html' %}
 
-    {% else %}
       {% include 'sections/status.html' %}
       {% include 'sections/group.html' %}
 
@@ -21,6 +19,6 @@
       {% include 'sections/exams.html' %}
       {% include 'sections/accounts.html' %}
 
-    {% endif %}
+
 
 {% endblock %}
