@@ -4,12 +4,11 @@ from loguru import logger
 
 from config import amo_api
 from src.classes.amo.types import ExtraDoc
-from src.dependencies import gas_api, templates, gd_pusher
+from src.dependencies import gas_api, templates, gd_pusher, tg_logger
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
 
 document_router = APIRouter()
-
 
 @document_router.get("/documents/{amo_id}/{doc_id}")
 async def documents(request: Request, amo_id: int, doc_id: int):
@@ -78,6 +77,11 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
             document: Document = gas_api.get_document(doc_id)
             uploads = await gas_api.get_document_uploads(amo_id, doc_id)
 
+        #  Оповещаем ТГ
+        message_to_tg = (f"Клиент [{customer.full_name}](https://xeniaceo.kommo.com/leads/detail/{customer.amo_id}) "
+                         f"загрузил(а) документ {doc_id}. ")
+        await tg_logger.send_message(message_to_tg)
+
         context = {
             "request": request,
             "document": document,
@@ -86,6 +90,7 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
             "uploads": uploads,
             "doc_is_extra": doc_id.isalpha(),
         }
+
 
         return templates.TemplateResponse("pages/document.html", context)
 

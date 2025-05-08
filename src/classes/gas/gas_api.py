@@ -141,7 +141,7 @@ class GDriveFetcher:
 
     # ДОКУМЕНТЫ
 
-    def get_document(self, doc_id):
+    def get_document(self, doc_id) -> Document | None:
         """
         Возвращает документ из закешированного списка документов
         """
