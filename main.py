@@ -6,20 +6,19 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from httpx import ConnectError
 from pydantic import ValidationError
 from starlette.requests import Request
-from fastapi.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
 from src.classes.amo.types import ExtraDoc
-from src.classes.gas.gas_api import GDriveFetcher
-from src.classes.doc_manager import DocManager
+from src.dependencies import gas_api, templates, gd_pusher
 from src.exceptions import InsufficientDataError
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument
 from src.models.group import Group
 from src.models.faq import FAQ
-from src.utils import format_datetime_ru, markdown_to_html
 
 from config import logger, amo_api
+from src.routes.documents import document_router
+from src.routes.exceptions import insufficient_data_exception_handler, generic_exception_handler
 
 
 @asynccontextmanager
@@ -40,20 +39,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.include_router(document_router)
+
+app.add_exception_handler(InsufficientDataError, insufficient_data_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
+app.add_exception_handler(ValidationError, generic_exception_handler)  # Assuming you want ValidationError handled generically
+
 # Делаем доступными папки загрузки и статики
 # Папка с загрузками должна быть смонтирована на диск как хранилище, если используется serverless
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-# Настраиваем шаблоны
-templates = Jinja2Templates(directory="src/templates")
-templates.env.filters["rudate"] = format_datetime_ru
-templates.env.filters['markdown'] = markdown_to_html
-
-# Создаем адаптеры для гугл-доков
-gas_api = GDriveFetcher()
-gd_pusher = DocManager()
-
 
 @app.get("/lk/{amo_id}")
 @app.get("/profile/{amo_id}")
@@ -61,6 +56,7 @@ async def profile(request: Request, amo_id: int):
 
     customer: Customer = await amo_api.fetch_lead_data(amo_id)
 
+    context = {"request": request, "customer": customer, "amo_id": amo_id, "config": gas_api.config}
 
     if customer is None:
         return templates.TemplateResponse("errors/404.html", context, status_code=404)
@@ -75,9 +71,6 @@ async def profile(request: Request, amo_id: int):
     # Досыпаем пользователю информацию про все загруженные файлы пользователя
     all_uploads: list[UploadedDocument] = await gas_api.get_all_uploads(amo_id)
     customer.set_uploads(all_uploads)
-
-    pprint(customer.docs)
-    context = {"request": request, "customer": customer, "amo_id": amo_id, "config": gas_api.config}
 
     return templates.TemplateResponse("pages/profile.html", context)
 
@@ -94,20 +87,6 @@ async def refresh(request: Request):
     return {"status": "success"}
 
 
-@app.get("/documents/{amo_id}/{doc_id}")
-async def documents(request: Request, amo_id: int, doc_id: int):
-    document: Document = gas_api.get_document(doc_id)
-    uploads = await gas_api.get_document_uploads(amo_id, doc_id)
-
-    context = {
-        "request": request,
-        "document": document,
-        "uploads": uploads,
-        "amo_id": amo_id,
-        "config": gas_api.config
-    }
-
-    return templates.TemplateResponse("pages/document.html", context)
 
 
 @app.get("/documents/{amo_id}/extra/{extra_title}")
@@ -213,27 +192,6 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
-
-@app.exception_handler(InsufficientDataError)
-async def unicorn_exception_handler(request: Request, exc: InsufficientDataError):
-    context = {"request": request, "message": exc.message, "config": gas_api.config}
-    return templates.TemplateResponse("errors/400.html", context, status_code=400)
-
-
-@app.exception_handler(Exception)
-@app.exception_handler(ValidationError)
-async def generic_exception_handler(request: Request, exc: Exception):
-    """Handles any uncaught exception, returning a generic 500 error page."""
-
-    logger.error(f"Unhandled exception for request {request.url}: {exc}", exc_info=True)
-
-    context = {
-        "request": request,
-        "config": gas_api.config,
-        "error_message": exc
-    }
-
-    return templates.TemplateResponse("errors/500.html", context, status_code=500)
 
 
 if (__name__ == "__main__"):
