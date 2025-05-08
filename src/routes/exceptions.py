@@ -1,11 +1,15 @@
 from starlette.requests import Request
 from config import logger
-from src.dependencies import templates
+from src.dependencies import templates, gas_api
 from src.exceptions import InsufficientDataError
 
 
 async def insufficient_data_exception_handler(request: Request, exc: InsufficientDataError):
-    context = {"request": request, "message": exc.message, }
+    context = {
+        "request": request,
+        "message": exc.message,
+        "config": gas_api.config
+    }
     return templates.TemplateResponse("errors/400.html", context, status_code=400)
 
 
@@ -16,7 +20,8 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
     context = {
         "request": request,
-        "error_message": exc
+        "error_message": exc,
+        "config": gas_api.config
     }
 
     return templates.TemplateResponse("errors/500.html", context, status_code=500)

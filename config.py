@@ -6,6 +6,7 @@ from loguru import logger
 
 from src.classes.amo.amoapi import AmoAPI
 from src.classes.amo.amoapi import FieldConverter as FC
+from src.classes.tg.tg_logger import TGLogger
 
 # GAS CONFIGS
 
