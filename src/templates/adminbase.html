@@ -1,0 +1,32 @@
+{# templates/base.html #}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Title{% endblock %}</title>
+    <script src="/static/tailwind_browser.js" lang="javascript"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    </style>
+
+</head>
+<body class="bg-[#F2F6F8] h-full">
+
+<div class="max-w-[850px] mx-auto md:p-6 font-['Montserrat']">
+
+  <main class="bg-white p-3 md:p-6 rounded-xl shadow-sm">
+  {% block content %}
+  {% endblock %}
+  </main>
+</div>
+
+</body>
+</html>
