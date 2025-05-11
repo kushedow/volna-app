@@ -11,21 +11,19 @@ from typing_extensions import deprecated
 from src.classes.amo.types import AmoCustomField, AmoBasicField, ContactDict, CustomFieldDict, ExtraDoc
 from src.exceptions import InsufficientDataError
 from src.models.customer import Customer
+from src.models.document import ExtraDocument, Document
 
 
 class FieldConverter:
-    """
-    Набор функций преобразования значений для вытаскивания из полей Амо данных в любом заданном виде
-    """
+    """Набор функций преобразования значений для вытаскивания из полей Амо данных в любом заданном виде"""
 
     @staticmethod
-    def str_to_docdict(field: AmoCustomField | AmoBasicField, lines: str, default=None) -> dict[str, ExtraDoc]:
+    def str_to_docdict(field: AmoCustomField | AmoBasicField, lines: str, default=None) -> dict[str, ExtraDocument]:
         """
         Converting lines like: [Doc_name_1] Doc_about_1 \n [Doc_name_2] Doc_about_2
-        to structure like [{name:"Doc_name_1", description: "Doc_about_1"}, {name:"Doc_name_2", description: "Doc_about_2"}]
         :return:
         """
-        doc_dict: dict[str, dict] = {}
+        doc_dict: dict[str, ExtraDocument] = {}
         pattern = re.compile(r"^\s*\[([^\]]+)\]\s*(.*?)\s*$")
 
         for line in lines.strip().split('\n'):
@@ -37,10 +35,10 @@ class FieldConverter:
             if match:
                 doc_name = match.group(1).strip()
                 doc_description = match.group(2).strip()
-                doc_dict[doc_name] = {"id": doc_name, "title": doc_name, "description": doc_description, "is_uploaded": False}
+                doc_dict[doc_name] = ExtraDocument(id=doc_name, title=doc_name, description=doc_description, is_uploaded=False)
             else:
-                # Log lines that don't match the expected format
-                logger.warning(f"Field {field.key if field else 'unknown'}: Line did not match expected format '[Name] Description': '{line}'")
+                logger.warning(
+                    f"Field {field.key if field else 'unknown'}: Line did not match expected format '[Name] Description': '{line}'")
 
         return doc_dict
 
@@ -81,7 +79,7 @@ class FieldConverter:
         except json.decoder.JSONDecodeError as error:
             logger.error(error)
             return []
-        return  result
+        return result
 
 
 class AmoAPI:
@@ -119,10 +117,7 @@ class AmoAPI:
         }
 
     # Загружаем данные
-
     async def fetch_lead_data(self, lead_id: int) -> Customer | None:
-
-        print(lead_id)
 
         url = f"{self.base_url}/api/v4/leads/{lead_id}?with=contacts,status"
         response = await self.client.get(url, headers=self.headers)
@@ -138,11 +133,6 @@ class AmoAPI:
         name_fields: dict[str: str] = await self._get_lead_names(lead_raw)
 
         customer_data: dict[str: any] = basic_fields | custom_fields | name_fields | {"amo_id": lead_id}
-        print()
-        print()
-        pprint(customer_data)
-        print()
-        print()
         customer: Customer = Customer(**customer_data)
 
         return customer
@@ -163,7 +153,8 @@ class AmoAPI:
 
         contact_raw: ContactDict = response.json()
 
-        return {"first_name": contact_raw["first_name"], "last_name": contact_raw["last_name"], "full_name": contact_raw["name"]}
+        return {"first_name": contact_raw["first_name"], "last_name": contact_raw["last_name"],
+                "full_name": contact_raw["name"]}
 
     @deprecated("Валидация вынесена из логики АМО")
     def __validate_lead_data(self, lead_data):
@@ -235,6 +226,3 @@ class AmoAPI:
             result[field_key] = self._extract_custom_field_data(field, field_data)
 
         return result
-
-
-

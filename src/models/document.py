@@ -13,12 +13,13 @@ class UploadedDocument(BaseModel):
     is_extra: bool = Field(default=False, description="Is manually assigned document upload, having name, not ID")
     picture_url: str = Field(default=None, description="Picture URL of the document")
 
+
 class Document(BaseModel):
 
     id: int = Field(..., description="Unique identifier")
     title: str = Field(..., min_length=1, max_length=255, description="Title of the document")
     description: str = Field(..., description="Brief description of the document")
-    guide: str = Field(..., description="Detailed guide how to get the document")
+    guide: str = Field(default="", description="Detailed guide how to get the document")
 
     uploads: list[UploadedDocument] = Field(default_factory=list)
 
@@ -27,3 +28,6 @@ class Document(BaseModel):
     doc_id: int = Field(default=None, description="duplicates id for idk what reason xD")  #
     gdrive_id: str = Field(default=None, description="GDrive Uploaded File Unique identifier")
 
+
+class ExtraDocument(Document):
+    id: str = Field(..., description="Unique string identifier")

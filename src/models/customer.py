@@ -37,7 +37,7 @@ class Customer(BaseModel):
     specialty: Speciality = Field(default=None)
 
     docs_required: list[int] = Field(default_factory=list)
-    docs_extra: dict[str, ExtraDoc] = Field(default_factory=dict)
+    docs_extra: dict[str, Document] = Field(default_factory=dict)
     docs_ready: list[int] = Field(default_factory=list)
     docs_status: DocStage = DocStage.docs_collecting
 
@@ -62,21 +62,19 @@ class Customer(BaseModel):
     is_activated: bool = Field(default=False, description="Активировался ли уже пользователь")
     has_full_support: bool = Field(default=False, description="Оплачено ли сопровождение (влияет на отображение блоков)")
 
-
     def set_uploads(self, uploads: list[UploadedDocument]):
         """Sets uploaded status info for basic and extra uploads"""
 
         for upload in uploads:
-            # Если дополнительный документ
-            if upload.is_extra:
+
+            if upload.is_extra:  # Если дополнительный документ
                 doc = self.docs_extra.get(upload.doc_id)
-                if doc is not None:
-                    doc["is_uploaded"] = True
-            # Если обычный документ
-            else:
+            else:  # Если обычный документ
                 doc = self.docs.get(upload.doc_id)
-                if doc is not None:
-                    doc.is_uploaded = True
+
+            if doc is not None:
+                doc.is_uploaded = True
+                doc.uploads.append(upload)
 
     @property
     def docs_stats(self) -> DocStatsDict:
@@ -84,7 +82,7 @@ class Customer(BaseModel):
         basic_total = len(self.docs)
         basic_uploaded = sum([1 if doc.is_uploaded else 0 for doc in self.docs.values()])
         extra_total = len(self.docs_extra)
-        extra_uploaded = sum([1 if doc["is_uploaded"] else 0 for doc in self.docs_extra.values()])
+        extra_uploaded = sum([1 if doc.is_uploaded else 0 for doc in self.docs_extra.values()])
 
         total = basic_total + extra_total
         uploaded = basic_uploaded + extra_uploaded

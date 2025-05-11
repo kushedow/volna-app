@@ -14,6 +14,14 @@
       {{document.description}}
     </p>
 
+    {% if document.is_uploaded %}
+
+    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
+      <p>Файл загружен. Вы можете вернуться и загрузить остальные. Или загрузить еще, если хотите!</p>
+    </div>
+
+    {% endif %}
+
     {% if uploads | length > 0 %}
         <div class="grid grid-cols-3 gap-4">
         {% for upload in uploads %}
@@ -23,14 +31,6 @@
         {% endfor %}
         </div>
     {% endif  %}
-
-    {% if document.is_uploaded %}
-
-    <div class="bg-[#F3F0FF] p-4 rounded-xl mb-8">
-      <p>Файл загружен. Вы можете вернуться и загрузить остальные. Или загрузить еще, если хотите!</p>
-    </div>
-
-    {% endif %}
 
 
     <form action="/upload" method="post" enctype="multipart/form-data" class="">

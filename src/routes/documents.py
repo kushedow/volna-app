@@ -6,9 +6,10 @@ from config import amo_api
 from src.classes.amo.types import ExtraDoc
 from src.dependencies import gas_api, templates, gd_pusher, tg_logger
 from src.models.customer import Customer
-from src.models.document import Document, UploadedDocument
+from src.models.document import Document, UploadedDocument, ExtraDocument
 
 document_router = APIRouter()
+
 
 @document_router.get("/documents/{amo_id}/{doc_id}")
 async def documents(request: Request, amo_id: int, doc_id: int):
@@ -48,16 +49,15 @@ async def extra_documents(request: Request, amo_id: int, extra_title: str):
     return templates.TemplateResponse("pages/document.html", context)
 
 
-
 @document_router.post("/upload")
-async def upload_documents(request: Request, file: UploadFile = File(...), file_2: UploadFile = File(...),
-                           file_3: UploadFile = File(...)):
+async def upload_document(request: Request, file: UploadFile = File(...), file_2: UploadFile = File(...),
+                          file_3: UploadFile = File(...)):
     try:
         form_data = await request.form()
 
         amo_id = int(form_data.get("amo_id"))
         doc_id: str = form_data.get("doc_id")
-        doc_is_extra: bool = bool(form_data.get("doc_is_extra"))
+        doc_is_extra: bool = doc_id.isalpha()
 
         customer: Customer = await amo_api.fetch_lead_data(amo_id)
 
@@ -68,29 +68,29 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
             logger.debug(f"Загрузка:  Начинаем загрузку файла {index}")
             result = await gd_pusher.upload_file(one_file, amo_id, doc_id)
 
-        # Смотрим, какой документ, принимаем решение в зависимости от этого
+        customer.specialty = gas_api.get_specialty(customer.specialty_id)
 
-        if doc_is_extra:
-            document: ExtraDoc = customer.docs_extra.get(doc_id)
-            uploads = await gas_api.get_document_uploads(amo_id, doc_id)
-        else:
-            document: Document = gas_api.get_document(doc_id)
-            uploads = await gas_api.get_document_uploads(amo_id, doc_id)
+        specialty_docs = customer.specialty.docs_required
+        customer.docs = gas_api.get_documents_by_indices(specialty_docs, customer.docs_ready)
 
-        #  Оповещаем ТГ
-        message_to_tg = (f"Клиент [{customer.full_name}](https://xeniaceo.kommo.com/leads/detail/{customer.amo_id}) "
-                         f"загрузил(а) документ {doc_id}. ")
-        await tg_logger.send_message(message_to_tg)
+        # Получаем все загрузки и актуализируем пользователя
+        all_uploads: list[UploadedDocument] = await gas_api.get_all_uploads(amo_id)
+        customer.set_uploads(all_uploads)
+
+        # Получаем док (в зависимости от типа)
+        document: Document = customer.docs_extra.get(doc_id) if doc_is_extra else gas_api.get_document(int(doc_id))
+
+        # Сообщаем в телеграм о завершении загрузки
+        await tg_logger.send_upload_report(document, customer)
 
         context = {
             "request": request,
             "document": document,
             "amo_id": amo_id,
             "config": gas_api.config,
-            "uploads": uploads,
-            "doc_is_extra": doc_id.isalpha(),
+            "uploads": document.uploads,
+            "doc_is_extra": doc_is_extra,
         }
-
 
         return templates.TemplateResponse("pages/document.html", context)
 
@@ -100,4 +100,3 @@ async def upload_documents(request: Request, file: UploadFile = File(...), file_
         raise e  # Re-raise HTTPExceptions
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
-
