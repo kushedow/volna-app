@@ -9,7 +9,7 @@
     <tbody class="divide-y divide-gray-300 ">
      {% for event in customer.group.events_upcoming_3 %}
       <tr class="py-2">
-        <td class="py-2 pr-4">{{ event.starts | rudate }}</td>
+        <td class="py-2 pr-4">{{ event.starts | rudate }} <span class="text-xs text-gray-400">(мск)</span></td>
         <td class="py-2 pr-4">{{ event.title }} </td>
         <td class="py-2 pr-4 text-gray ">{{ event.description }}</td>
         <td class="py-2 text-right">
