@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from starlette.requests import Request
 
 from config import amo_api
-from src.dependencies import templates, gas_api
+from src.dependencies import templates, gas_api, amo_reporter
 from src.models.customer import Customer
 from src.models.document import UploadedDocument
 
@@ -30,5 +30,9 @@ async def profile(request: Request, amo_id: int):
     # Досыпаем пользователю информацию про все загруженные файлы пользователя
     all_uploads: list[UploadedDocument] = await gas_api.get_all_uploads(amo_id)
     customer.set_uploads(all_uploads)
+
+    # Если пользователь не активирован – активируем
+    if not customer.is_activated:
+        await amo_reporter.activate(amo_id)
 
     return templates.TemplateResponse("pages/profile.html", context)

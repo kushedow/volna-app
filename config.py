@@ -30,6 +30,7 @@ TIMEZONE = zoneinfo.ZoneInfo("Asia/Qatar")
 AMO_BASE_URL = "https://xeniaceo.kommo.com"
 AMO_ACCESS_TOKEN = os.getenv("AMO_ACCESS_TOKEN")
 OPERATIONAL_FUNNEL_ID = 9490932
+AMO_REPORT_URL = "https://tglk.ru/in/5KKVZH8A7uyKXEe5"
 
 # UPLOAD CONFIGS
 

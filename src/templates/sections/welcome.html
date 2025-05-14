@@ -1,4 +1,4 @@
-<section id="welcome" class="text-center max-w-xl mx-auto m-6 mb-10">
+<section id="welcome" class="hidden text-center max-w-xl mx-auto m-6 mb-10" style="margin-bottom: 450px">
     <!-- Emoji Container -->
     <div class="w-40 h-40 bg-[#E9F1F0] rounded-full flex items-center justify-center mx-auto mb-8">
       <span class="text-8xl">🤔</span>
@@ -22,11 +22,18 @@
 
   window.onload = function() {
 
+    function showWelcome(){
+
+        const welcomeElement = document.getElementById('welcome');
+        welcomeElement.classList.remove('hidden');
+
+    }
+
     function hideWelcome() {
 
           const welcomeElement = document.getElementById('welcome');
               if (welcomeElement) {
-              welcomeElement.style.display = 'none';
+              welcomeElement.classList.add('hidden');
             } else {
                 console.warn('Element with ID "welcome" not found on the page.');
             }
@@ -34,7 +41,11 @@
           localStorage.setItem('is_activated', 1);
     }
 
-    if (localStorage.getItem('is_activated') !== null) { hideWelcome() }
+    if (localStorage.getItem('is_activated') !== null) {
+        hideWelcome()
+    } else {
+        showWelcome()
+    }
     const activateButton = document.getElementById('welcome__activate');
     activateButton.addEventListener('click', hideWelcome);
 

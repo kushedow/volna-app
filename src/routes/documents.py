@@ -4,7 +4,7 @@ from loguru import logger
 
 from config import amo_api
 from src.classes.amo.types import ExtraDoc
-from src.dependencies import gas_api, templates, gd_pusher, tg_logger
+from src.dependencies import gas_api, templates, gd_pusher, tg_logger, amo_reporter
 from src.models.customer import Customer
 from src.models.document import Document, UploadedDocument, ExtraDocument
 
@@ -82,6 +82,10 @@ async def upload_document(request: Request, file: UploadFile = File(...), file_2
 
         # Сообщаем в телеграм о завершении загрузки
         await tg_logger.send_upload_report(document, customer)
+
+        # Сообщаем в амо о завершении загрузки
+        amo_reporter.update_documents(amo_id, [doc.doc_id for doc in customer.docs.values() if doc.is_uploaded])
+        amo_reporter.add_comment(amo_id, f"Документ {document.title} загружен")
 
         context = {
             "request": request,
