@@ -15,6 +15,7 @@ from src.models.faq import FAQ
 
 from config import logger, amo_api
 from src.routes.admin import admin_router
+from src.routes.api import api_router
 from src.routes.documents import document_router
 from src.routes.exceptions import insufficient_data_exception_handler, generic_exception_handler
 from src.routes.profile import profile_router
@@ -37,10 +38,11 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(document_router)
-app.include_router(admin_router)
 
-app.include_router(profile_router)
+routers = (document_router, admin_router, api_router, profile_router)
+for router in routers:
+    app.include_router(router)
+
 
 app.add_exception_handler(InsufficientDataError, insufficient_data_exception_handler)
 app.add_exception_handler(ValidationError, generic_exception_handler)
